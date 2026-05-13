@@ -49,7 +49,7 @@ export function SearchInput({ onAnalyze, isLoading }: SearchInputProps) {
         <Button 
           type="submit" 
           disabled={isLoading || !url}
-          className="absolute right-1.5 h-11 rounded-full px-6 bg-zinc-100 text-zinc-900 hover:bg-zinc-200"
+          className="absolute right-1.5 h-11 rounded-full px-6 bg-zinc-100 text-zinc-900 hover:bg-green-500 hover:text-white"
         >
           {isLoading ? "Scanning..." : "Analyze"}
         </Button>

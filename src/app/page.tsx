@@ -11,7 +11,7 @@ export default function Home() {
   const handleAnalyze = async (type: 'handle' | 'channelId', value: string) => {
     setLoading(true);
     
-    // Simulating a brief delay before we (eventually) route to the dashboard
+    // brief delay before route to dashboard
     setTimeout(() => {
       setLoading(false);
       alert(`Ready to analyze: ${value}. \nNext step: We will build the dashboard page to route to!`);
@@ -38,7 +38,7 @@ export default function Home() {
         />
       </div>
 
-      {/* Subtle Background Grid/Glow Overlay */}
+      {/* BG Grid/Glow */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-size-[14px_24px] mask-[radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none"></div>
       
       <main className="grow relative flex flex-col items-center justify-center p-4 sm:p-8 z-10">
@@ -61,10 +61,10 @@ export default function Home() {
               YouTube API v3 Connected
             </div>
             
-            <h1 className="text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight">
-              Uncover any channel's <br className="hidden sm:block" />
-              <span className="text-transparent bg-clip-text bg-linear-to-r from-zinc-200 to-zinc-600">
-                true performance.
+            <h1 className="text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight" style={{ fontFamily: '"Black Kastile Modern", sans-serif', letterSpacing: '0.10em' }}>
+              STATS-TUBE <br className="hidden sm:block" />
+              <span className="text-4xl text-transparent bg-clip-text bg-linear-to-r from-zinc-200 to-zinc-600" style={{ letterSpacing: 'normal' }}>
+                Uncover channels' true performance.
               </span>
             </h1>
             
@@ -74,7 +74,7 @@ export default function Home() {
             </p>
           </div>
 
-          {/* Search Bar Wrapper (adds a glowing border effect) */}
+          {/* Search Bar Wrapper */}
           <div className="max-w-2xl mx-auto w-full animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-150">
             <div className="p-0.5 rounded-full bg-linear-to-tr from-zinc-800 via-zinc-700 to-zinc-800 shadow-2xl">
               <div className="bg-zinc-950 rounded-full">
@@ -126,7 +126,7 @@ export default function Home() {
 
       {/* Minimal Footer */}
       <footer className="w-full py-8 text-center text-sm text-zinc-600 border-t border-zinc-900/50 bg-zinc-950/50 backdrop-blur-sm z-10">
-        <p>© {new Date().getFullYear()} StatsTube. Built with Next.js, Tailwind, and the YouTube Data API.</p>
+        <p className="text-blue-400">© {new Date().getFullYear()}  StatsTube</p>
       </footer>
     </div>
   );
