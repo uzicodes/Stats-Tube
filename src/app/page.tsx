@@ -3,19 +3,14 @@
 import { useState } from "react";
 import { SearchInput } from "@/components/ui/SearchInput";
 import Galaxy from "@/components/Galaxy";
+import { useChannelData } from "@/hooks/useChannelData";
 import { Activity, Shield, TrendingUp } from "lucide-react";
 
 export default function Home() {
-  const [loading, setLoading] = useState(false);
+  const { loading, error, channelData, videosData, fetchChannelData } = useChannelData();
 
   const handleAnalyze = async (type: 'handle' | 'channelId', value: string) => {
-    setLoading(true);
-    
-    // brief delay before route to dashboard
-    setTimeout(() => {
-      setLoading(false);
-      alert(`Ready to analyze: ${value}. \nNext step: We will build the dashboard page to route to!`);
-    }, 1000);
+    await fetchChannelData(type, value);
   };
 
   return (
