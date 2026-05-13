@@ -25,18 +25,27 @@ export default function Home() {
       <main className="grow relative flex flex-col items-center justify-center p-4 sm:p-8">
         <div className="w-full max-w-4xl space-y-12 text-center pt-10 sm:pt-20">
           
+          {/* Logo */}
+          <div className="flex justify-center -mt-8 sm:-mt-12 mb-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+            <img 
+              src="/logo2.png" 
+              alt="Stats-Tube Logo"
+              className="h-26 w-auto"
+            />
+          </div>
+          
           {/* Hero Section */}
           <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-1000">
             {/* Status Badge */}
             <div className="inline-flex items-center justify-center px-3 py-1 mb-4 text-sm font-medium rounded-full bg-zinc-900 border border-zinc-800 text-zinc-300">
               <span className="flex w-2 h-2 rounded-full bg-green-500 mr-2 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.8)]"></span>
-              YouTube API v3 Connected
+              YouTube API v3 
             </div>
             
             <h1 className="text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight">
-              Uncover any channel's <br className="hidden sm:block" />
+              uncover channel's true <br className="hidden sm:block" />
               <span className="text-transparent bg-clip-text bg-linear-to-r from-zinc-200 to-zinc-600">
-                true performance.
+                performance !
               </span>
             </h1>
             
