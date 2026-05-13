@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { SearchInput } from "@/components/ui/SearchInput";
+import Galaxy from "@/components/Galaxy";
 import { Activity, Shield, TrendingUp } from "lucide-react";
 
 export default function Home() {
@@ -19,10 +20,28 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-50 selection:bg-zinc-800 relative overflow-hidden flex flex-col">
+      {/* Galaxy Background Animation */}
+      <div className="absolute inset-0 pointer-events-none">
+        <Galaxy
+          className="absolute inset-0"
+          starSpeed={0.5}
+          density={1}
+          hueShift={140}
+          speed={1}
+          glowIntensity={0.3}
+          saturation={0}
+          mouseRepulsion
+          repulsionStrength={2}
+          twinkleIntensity={0.3}
+          rotationSpeed={0.1}
+          transparent
+        />
+      </div>
+
       {/* Subtle Background Grid/Glow Overlay */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-size-[14px_24px] mask-[radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none"></div>
       
-      <main className="grow relative flex flex-col items-center justify-center p-4 sm:p-8">
+      <main className="grow relative flex flex-col items-center justify-center p-4 sm:p-8 z-10">
         <div className="w-full max-w-4xl space-y-12 text-center pt-10 sm:pt-20">
           
           {/* Logo */}
@@ -39,13 +58,13 @@ export default function Home() {
             {/* Status Badge */}
             <div className="inline-flex items-center justify-center px-3 py-1 mb-4 text-sm font-medium rounded-full bg-zinc-900 border border-zinc-800 text-zinc-300">
               <span className="flex w-2 h-2 rounded-full bg-green-500 mr-2 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.8)]"></span>
-              YouTube API v3 
+              YouTube API v3 Connected
             </div>
             
             <h1 className="text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight">
-              uncover channel's true <br className="hidden sm:block" />
+              Uncover any channel's <br className="hidden sm:block" />
               <span className="text-transparent bg-clip-text bg-linear-to-r from-zinc-200 to-zinc-600">
-                performance !
+                true performance.
               </span>
             </h1>
             
