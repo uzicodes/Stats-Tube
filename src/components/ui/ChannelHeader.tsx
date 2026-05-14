@@ -1,4 +1,6 @@
 import Image from "next/image";
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
 
 interface ChannelHeaderProps {
   channel: any; // We'll type this strictly later
@@ -16,27 +18,24 @@ export function ChannelHeader({ channel }: ChannelHeaderProps) {
     }).format(Number(num));
   };
 
-  return (
-    <div className="w-full bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-4 relative z-10">
-      {/* Banner Image */}
-      <div className="h-32 sm:h-48 w-full bg-zinc-800 relative">
-        {channel.brandingSettings?.image?.bannerExternalUrl ? (
-          <Image
-            src={channel.brandingSettings.image.bannerExternalUrl}
-            alt="Channel Banner"
-            fill
-            sizes="(max-width: 640px) 100vw, 100vw"
-            className="object-cover opacity-80"
-          />
-        ) : (
-          <div className="w-full h-full bg-gradient-to-r from-zinc-800 to-zinc-900" />
-        )}
-      </div>
+  // Format channel creation date (month, year)
+  const getChannelCreatedDate = () => {
+    const date = new Date(snippet.publishedAt);
+    return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+  };
 
-      {/* Profile Section */}
-      <div className="px-6 pb-6 relative">
-        <div className="flex flex-col sm:flex-row items-center sm:items-end gap-4 sm:gap-6 -mt-12 sm:-mt-16 mb-4">
-          <div className="relative w-24 h-24 sm:w-32 sm:h-32 rounded-full border-4 border-zinc-900 bg-zinc-800 overflow-hidden shrink-0">
+  return (
+    <>
+      {/* Back Button */}
+      <Link href="/" className="inline-flex items-center gap-2 text-zinc-400 hover:text-zinc-100 transition-colors mb-6">
+        <ArrowLeft className="w-4 h-4" />
+        <span className="text-sm">Back to Home</span>
+      </Link>
+
+      <div className="w-full bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-4 relative z-10 p-6">
+        {/* Profile Section */}
+        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+          <div className="relative w-24 h-24 sm:w-32 sm:h-32 rounded-full border-4 border-zinc-800 bg-zinc-800 overflow-hidden shrink-0">
             <Image
               src={snippet.thumbnails.high.url}
               alt={snippet.title}
@@ -46,27 +45,38 @@ export function ChannelHeader({ channel }: ChannelHeaderProps) {
             />
           </div>
           
-          <div className="text-center sm:text-left flex-grow pb-2">
-            <h1 className="text-2xl sm:text-3xl font-bold text-zinc-100">{snippet.title}</h1>
-            <p className="text-zinc-400">{snippet.customUrl}</p>
-          </div>
-
-          <div className="flex gap-4 sm:gap-8 pb-2">
-            <div className="text-center sm:text-left">
-              <p className="text-sm text-zinc-500 font-medium uppercase tracking-wider">Subscribers</p>
-              <p className="text-xl font-bold text-zinc-100">{formatCompact(stats.subscriberCount)}</p>
-            </div>
-            <div className="text-center sm:text-left">
-              <p className="text-sm text-zinc-500 font-medium uppercase tracking-wider">Total Views</p>
-              <p className="text-xl font-bold text-zinc-100">{formatCompact(stats.viewCount)}</p>
-            </div>
+          <div className="text-center sm:text-left grow">
+            <h1 className="text-2xl sm:text-3xl font-bold text-zinc-100 mb-1">{snippet.title}</h1>
+            <p className="text-zinc-400 text-sm mb-4">{snippet.customUrl}</p>
+            <p className="text-zinc-400 text-sm max-w-2xl line-clamp-2">
+              {snippet.description || "No description provided."}
+            </p>
           </div>
         </div>
-        
-        <p className="text-zinc-400 text-sm max-w-3xl mt-4 line-clamp-2">
-          {snippet.description || "No description provided."}
-        </p>
+
+        {/* Stats Row with Channel Creation Date */}
+        <div className="flex items-center gap-12 mt-8">
+          <div className="inline-flex gap-8 px-5 py-3 bg-zinc-800/50 border border-zinc-700 rounded-xl">
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-blue-400">Subscribers</span>
+              <span className="text-lg font-bold text-zinc-100">{formatCompact(stats.subscriberCount)}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-blue-400">Total views</span>
+              <span className="text-lg font-bold text-zinc-100">{formatCompact(stats.viewCount)}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-blue-400">Videos</span>
+              <span className="text-lg font-bold text-zinc-100">{formatCompact(stats.videoCount)}</span>
+            </div>
+          </div>
+          
+          <div>
+            <p className="text-sm text-zinc-400">Channel created</p>
+            <p className="text-sm font-semibold text-zinc-100">{getChannelCreatedDate()}</p>
+          </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
