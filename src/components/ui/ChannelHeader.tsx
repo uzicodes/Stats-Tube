@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
 
 interface ChannelHeaderProps {
   channel: any; // We'll type this strictly later
@@ -9,6 +10,7 @@ interface ChannelHeaderProps {
 export function ChannelHeader({ channel }: ChannelHeaderProps) {
   const snippet = channel.snippet;
   const stats = channel.statistics;
+  const [activeTab, setActiveTab] = useState<string>("Overview");
   
   // Format numbers to look clean (e.g., 1,500,000 -> 1.5M)
   const formatCompact = (num: string | number) => {
@@ -54,26 +56,71 @@ export function ChannelHeader({ channel }: ChannelHeaderProps) {
           </div>
         </div>
 
-        {/* Stats Row with Channel Creation Date */}
-        <div className="flex items-center gap-12 mt-8">
-          <div className="inline-flex gap-8 px-5 py-3 bg-zinc-800/50 border border-zinc-700 rounded-xl">
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-blue-400">Subscribers</span>
-              <span className="text-lg font-bold text-zinc-100">{formatCompact(stats.subscriberCount)}</span>
+        {/* Stats Row &  Channel Creation Date */}
+        <div className="flex items-center gap-8 mt-8 justify-between">
+          <div className="flex items-center gap-8">
+            <div className="inline-flex gap-8 px-5 py-3 bg-zinc-800/50 border border-zinc-700 rounded-xl">
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-blue-400">Subscribers</span>
+                <span className="text-lg font-bold text-zinc-100">{formatCompact(stats.subscriberCount)}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-blue-400">Total views</span>
+                <span className="text-lg font-bold text-zinc-100">{formatCompact(stats.viewCount)}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-blue-400">Videos</span>
+                <span className="text-lg font-bold text-zinc-100">{formatCompact(stats.videoCount)}</span>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-blue-400">Total views</span>
-              <span className="text-lg font-bold text-zinc-100">{formatCompact(stats.viewCount)}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-blue-400">Videos</span>
-              <span className="text-lg font-bold text-zinc-100">{formatCompact(stats.videoCount)}</span>
+            
+            <div>
+              <p className="text-sm text-zinc-400">Channel created</p>
+              <p className="text-sm font-semibold text-zinc-100">{getChannelCreatedDate()}</p>
             </div>
           </div>
           
-          <div>
-            <p className="text-sm text-zinc-400">Channel created</p>
-            <p className="text-sm font-semibold text-zinc-100">{getChannelCreatedDate()}</p>
+          <div className="flex gap-3 items-center">
+            <button 
+              onClick={() => setActiveTab("Overview")}
+              className={`px-3 py-2 text-sm border rounded-lg transition-colors ${
+                activeTab === "Overview" 
+                  ? "text-green-400 border-green-400" 
+                  : "text-zinc-300 border-zinc-600 hover:border-zinc-400 hover:text-zinc-100"
+              }`}
+            >
+              Overview
+            </button>
+            <button 
+              onClick={() => setActiveTab("Trends")}
+              className={`px-3 py-2 text-sm border rounded-lg transition-colors ${
+                activeTab === "Trends" 
+                  ? "text-green-400 border-green-400" 
+                  : "text-zinc-300 border-zinc-600 hover:border-zinc-400 hover:text-zinc-100"
+              }`}
+            >
+              Trends
+            </button>
+            <button 
+              onClick={() => setActiveTab("Videos")}
+              className={`px-3 py-2 text-sm border rounded-lg transition-colors ${
+                activeTab === "Videos" 
+                  ? "text-green-400 border-green-400" 
+                  : "text-zinc-300 border-zinc-600 hover:border-zinc-400 hover:text-zinc-100"
+              }`}
+            >
+              Videos
+            </button>
+            <button 
+              onClick={() => setActiveTab("Compare")}
+              className={`px-3 py-2 text-sm border rounded-lg transition-colors ${
+                activeTab === "Compare" 
+                  ? "text-green-400 border-green-400" 
+                  : "text-zinc-300 border-zinc-600 hover:border-zinc-400 hover:text-zinc-100"
+              }`}
+            >
+              Compare
+            </button>
           </div>
         </div>
       </div>
