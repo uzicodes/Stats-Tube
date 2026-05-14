@@ -25,6 +25,7 @@ export function ChannelHeader({ channel }: ChannelHeaderProps) {
             src={channel.brandingSettings.image.bannerExternalUrl}
             alt="Channel Banner"
             fill
+            sizes="(max-width: 640px) 100vw, 100vw"
             className="object-cover opacity-80"
           />
         ) : (
@@ -40,6 +41,7 @@ export function ChannelHeader({ channel }: ChannelHeaderProps) {
               src={snippet.thumbnails.high.url}
               alt={snippet.title}
               fill
+              sizes="(max-width: 640px) 96px, 128px"
               className="object-cover"
             />
           </div>
