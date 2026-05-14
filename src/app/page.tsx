@@ -51,14 +51,8 @@ export default function Home() {
       <header className="w-full relative z-20 pt-6 px-4 sm:px-8 flex justify-center">
          <div className="max-w-2xl w-full">
             {/* Logo */}
-            <div className="flex justify-center mb-6">
+            <div className="flex justify-center mb-1">
               <img src="/logo2.png" alt="Stats-Tube Logo" className="h-20 w-auto object-contain" />
-            </div>
-            {/* Persistent Search Bar */}
-            <div className="p-0.5 rounded-full bg-linear-to-tr from-zinc-800 via-zinc-700 to-zinc-800 shadow-2xl">
-              <div className="bg-zinc-950 rounded-full">
-                <SearchInput onAnalyze={handleAnalyze} isLoading={loading} />
-              </div>
             </div>
          </div>
       </header>
@@ -85,13 +79,25 @@ export default function Home() {
         {/* LANDING PAGE */}
         {!showDashboard && !loading && !error && (
           <div className="w-full max-w-4xl space-y-12 text-center animate-in fade-in duration-700">
-            <div className="space-y-6 pt-8">
+            <div className="space-y-1 -mt-6">
               <h1 className="text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight" style={{ fontFamily: '"Black Kastile Modern", sans-serif', letterSpacing: '0.10em' }}>
-                STATS-TUBE <br className="hidden sm:block" />
-                <span className="text-4xl text-transparent bg-clip-text bg-linear-to-r from-zinc-200 to-zinc-600" style={{ letterSpacing: 'normal', fontFamily: 'system-ui, sans-serif' }}>
-                  Uncover channels' true performance.
-                </span>
+                STATS-TUBE
               </h1>
+            </div>
+
+            {/* Search Bar */}
+            <div className="max-w-2xl mx-auto w-full">
+              <div className="p-0.5 rounded-full bg-linear-to-tr from-zinc-800 via-zinc-700 to-zinc-800 shadow-2xl">
+                <div className="bg-zinc-950 rounded-full">
+                  <SearchInput onAnalyze={handleAnalyze} isLoading={loading} />
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <h2 className="text-4xl text-transparent bg-clip-text bg-linear-to-r from-zinc-200 to-zinc-600" style={{ letterSpacing: 'normal', fontFamily: 'system-ui, sans-serif' }}>
+                Uncover channels' true performance.
+              </h2>
               <p className="max-w-2xl mx-auto text-lg sm:text-xl text-zinc-400">
                 Paste a YouTube URL, get instant data-driven intelligence. 
                 Track engagement rates, spot outliers, and uncover momentum. No Login Required.
