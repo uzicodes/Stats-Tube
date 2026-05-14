@@ -9,6 +9,7 @@ import { ChannelHeader } from "@/components/ui/ChannelHeader";
 
 export default function Home() {
   const { loading, error, channelData, videosData, fetchChannelData } = useChannelData();
+  const [showDashboard, setShowDashboard] = useState(false);
   
   // Bug Report Form States
   const [bugEmail, setBugEmail] = useState("");
@@ -18,6 +19,11 @@ export default function Home() {
 
   const handleAnalyze = async (type: 'handle' | 'channelId', value: string) => {
     await fetchChannelData(type, value);
+    setShowDashboard(true);
+  };
+
+  const handleBackToHome = () => {
+    setShowDashboard(false);
   };
 
   const handleBugSubmit = (e: React.FormEvent) => {
@@ -77,7 +83,7 @@ export default function Home() {
 
 
         {/* LANDING PAGE */}
-        {!channelData && !loading && !error && (
+        {!showDashboard && !loading && !error && (
           <div className="w-full max-w-4xl space-y-12 text-center animate-in fade-in duration-700">
             <div className="space-y-6 pt-8">
               <h1 className="text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight" style={{ fontFamily: '"Black Kastile Modern", sans-serif', letterSpacing: '0.10em' }}>
@@ -139,10 +145,10 @@ export default function Home() {
 
 
         {/* DASHBOARD (Data Fetched) */}
-        {channelData && videosData && !loading && (
+        {showDashboard && channelData && videosData && !loading && (
           <div className="w-full max-w-5xl mx-auto mt-4 space-y-6 text-left animate-in slide-in-from-bottom-8 duration-700">
             {/* The Header component we built earlier */}
-            <ChannelHeader channel={channelData} />
+            <ChannelHeader channel={channelData} onBack={handleBackToHome} />
             
             {/* KPI Cards Placeholder */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">

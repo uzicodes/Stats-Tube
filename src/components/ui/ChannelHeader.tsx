@@ -1,13 +1,15 @@
+"use client";
+
 import Image from "next/image";
 import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
 import { useState } from "react";
 
 interface ChannelHeaderProps {
   channel: any; // We'll type this strictly later
+  onBack?: () => void;
 }
 
-export function ChannelHeader({ channel }: ChannelHeaderProps) {
+export function ChannelHeader({ channel, onBack }: ChannelHeaderProps) {
   const snippet = channel.snippet;
   const stats = channel.statistics;
   const [activeTab, setActiveTab] = useState<string>("Overview");
@@ -26,13 +28,19 @@ export function ChannelHeader({ channel }: ChannelHeaderProps) {
     return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
   };
 
+  const handleBackClick = () => {
+    if (onBack) {
+      onBack();
+    }
+  };
+
   return (
     <>
       {/* Back Button */}
-      <Link href="/" className="inline-flex items-center gap-2 text-zinc-400 hover:text-zinc-100 transition-colors mb-6">
+      <button onClick={handleBackClick} className="inline-flex items-center gap-2 text-zinc-400 hover:text-zinc-100 transition-colors mb-6 bg-none border-none cursor-pointer">
         <ArrowLeft className="w-4 h-4" />
         <span className="text-sm">Back to Home</span>
-      </Link>
+      </button>
 
       <div className="w-full bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-4 relative z-10 p-6">
         {/* Profile Section */}
