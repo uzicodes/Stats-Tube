@@ -219,12 +219,20 @@ export default function Home() {
                     </p>
                   </div>
 
-                  {/* Est. Earnings */}
+                  {/* Est. Lifetime Earnings */}
                   <div className="p-6 bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-xl">
-                    <p className="text-zinc-400 text-sm font-medium mb-2">Est. Total Earnings</p>
+                    <div className="flex items-center gap-2 mb-2">
+                      <p className="text-zinc-400 text-sm font-medium">Est. Lifetime Earnings</p>
+                      <div className="group relative">
+                        <Info className="w-4 h-4 text-zinc-500 cursor-help" />
+                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-zinc-800 text-zinc-300 text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+                     Total views (Shorts+ Videos) $2.00 CPM
+                        </div>
+                      </div>
+                    </div>
                     <p className="text-2xl font-bold text-green-400">
                       ${formatNumber(
-                        (videosData.reduce((sum: number, video: any) => sum + (parseInt(video.statistics?.viewCount) || 0), 0) / 1000) * 4
+                        (parseInt(channelData.statistics?.viewCount) / 1000) * 2.00
                       )}
                     </p>
                   </div>
