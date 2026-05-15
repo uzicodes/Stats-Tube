@@ -6,6 +6,7 @@ import Galaxy from "@/components/Galaxy";
 import { useChannelData } from "@/hooks/useChannelData";
 import { Activity, Shield, TrendingUp, Bug, CheckCircle2 } from "lucide-react";
 import { ChannelHeader } from "@/components/ui/ChannelHeader";
+import Footer from "@/app/footer";
 
 export default function Home() {
   const { loading, error, channelData, videosData, fetchChannelData } = useChannelData();
@@ -174,9 +175,7 @@ export default function Home() {
 
       </main>
 
-      <footer className="w-full py-8 text-center text-sm text-zinc-600 border-t border-zinc-900/50 bg-zinc-950/50 backdrop-blur-sm z-30 relative">
-        <p className="text-blue-400">© {new Date().getFullYear()} StatsTube</p>
-      </footer>
+      <Footer />
     </div>
   );
 }
