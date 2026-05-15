@@ -47,7 +47,7 @@ export default function Home() {
       </div>
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-size-[14px_24px] mask-[radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none"></div>
       
-      {/* Top Navigation (Always visible) */}
+      {/* Top Navigation */}
       <header className="w-full relative z-20 pt-6 px-4 sm:px-8 flex justify-center">
          <div className="max-w-2xl w-full">
             {/* Logo */}
@@ -98,27 +98,28 @@ export default function Home() {
               <h2 className="text-4xl text-transparent bg-clip-text bg-linear-to-r from-zinc-200 to-zinc-600" style={{ letterSpacing: 'normal', fontFamily: 'system-ui, sans-serif' }}>
                 Uncover channels' true performance.
               </h2>
-              <p className="max-w-2xl mx-auto text-lg sm:text-xl text-zinc-400">
+              <p className="max-w-4xl mx-auto text-sm sm:text-base text-zinc-400">
                 Paste a YouTube URL, get instant data-driven intelligence. 
-                Track engagement rates, spot outliers, and uncover momentum. No Login Required.
+                Track engagement rates and uncover momentum. <br />
+                No Logins Required.
               </p>
             </div>
 
             {/* Feature Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-8 text-left">
-              <div className="flex flex-col space-y-3 p-6 rounded-2xl bg-zinc-900/40 border border-zinc-800/50">
-                <Activity className="w-6 h-6 text-blue-400" />
-                <h3 className="font-semibold text-zinc-100 text-lg">Deep Engagement</h3>
+              <div className="group flex flex-col space-y-3 p-6 rounded-2xl bg-zinc-900/40 border border-zinc-800/50 hover:border-green-400 transition-colors">
+                <Activity className="w-6 h-6 text-amber-400" />
+                <h3 className="font-semibold text-zinc-100 text-lg group-hover:text-green-400 transition-colors">Deep Engagement</h3>
                 <p className="text-sm text-zinc-400">Analyze likes, views, and comments for real interaction rates.</p>
               </div>
-              <div className="flex flex-col space-y-3 p-6 rounded-2xl bg-zinc-900/40 border border-zinc-800/50">
-                <TrendingUp className="w-6 h-6 text-amber-400" />
-                <h3 className="font-semibold text-zinc-100 text-lg">Proprietary Scoring</h3>
+              <div className="group flex flex-col space-y-3 p-6 rounded-2xl bg-zinc-900/40 border border-zinc-800/50 hover:border-green-400 transition-colors">
+                <TrendingUp className="w-6 h-6 text-purple-400" />
+                <h3 className="font-semibold text-zinc-100 text-lg group-hover:text-green-400 transition-colors">Proprietary Scoring</h3>
                 <p className="text-sm text-zinc-400">0-100 score based on baselines, recency, and momentum.</p>
               </div>
-              <div className="flex flex-col space-y-3 p-6 rounded-2xl bg-zinc-900/40 border border-zinc-800/50">
-                <Shield className="w-6 h-6 text-green-400" />
-                <h3 className="font-semibold text-zinc-100 text-lg">Secure & Fast</h3>
+              <div className="group flex flex-col space-y-3 p-6 rounded-2xl bg-zinc-900/40 border border-zinc-800/50 hover:border-green-400 transition-colors">
+                <Shield className="w-6 h-6 text-red-400" />
+                <h3 className="font-semibold text-zinc-100 text-lg group-hover:text-green-400 transition-colors">Secure & Fast</h3>
                 <p className="text-sm text-zinc-400">Server-side edge routing keeps API keys hidden entirely.</p>
               </div>
             </div>
@@ -129,14 +130,14 @@ export default function Home() {
                 <div className="flex items-center gap-3 mb-6">
                   <Bug className="w-6 h-6 text-zinc-300" />
                   <div>
-                    <h3 className="font-semibold text-zinc-100 text-xl">Spotted a bug?</h3>
+                    <h3 className="font-semibold text-green-400 text-xl">Spotted a bug ?</h3>
                   </div>
                 </div>
                 {bugSuccess ? (
                   <div className="py-8 text-center text-green-400"><CheckCircle2 className="w-12 h-12 mx-auto mb-3" /><p>Submitted successfully!</p></div>
                 ) : (
                   <form onSubmit={handleBugSubmit} className="space-y-4">
-                    <input type="email" value={bugEmail} onChange={(e) => setBugEmail(e.target.value)} placeholder="Email (Optional)" className="w-full bg-zinc-950/50 border border-zinc-800 rounded-xl px-4 py-3 text-sm" />
+                    <input type="email" value={bugEmail} onChange={(e) => setBugEmail(e.target.value)} placeholder="Email" className="w-full bg-zinc-950/50 border border-zinc-800 rounded-xl px-4 py-3 text-sm" />
                     <textarea value={bugDetails} onChange={(e) => setBugDetails(e.target.value)} placeholder="Bug details..." required rows={3} className="w-full bg-zinc-950/50 border border-zinc-800 rounded-xl px-4 py-3 text-sm resize-none" />
                     <button type="submit" disabled={isSubmittingBug} className="px-6 py-3 bg-zinc-100 text-zinc-900 rounded-xl font-medium text-sm">
                       {isSubmittingBug ? "Submitting..." : "Submit Report"}
@@ -150,10 +151,10 @@ export default function Home() {
 
 
 
-        {/* DASHBOARD (Data Fetched) */}
+        {/* DASHBOARD */}
         {showDashboard && channelData && videosData && !loading && (
           <div className="w-full max-w-5xl mx-auto mt-4 space-y-6 text-left animate-in slide-in-from-bottom-8 duration-700">
-            {/* The Header component we built earlier */}
+
             <ChannelHeader channel={channelData} onBack={handleBackToHome} />
             
             {/* KPI Cards Placeholder */}
