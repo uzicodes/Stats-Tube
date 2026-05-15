@@ -4,13 +4,23 @@ import { useState } from "react";
 import { SearchInput } from "@/components/ui/SearchInput"; 
 import Galaxy from "@/components/Galaxy";
 import { useChannelData } from "@/hooks/useChannelData";
-import { Activity, Shield, TrendingUp, Bug, CheckCircle2 } from "lucide-react";
+import { Activity, Shield, TrendingUp, Bug, CheckCircle2, Info } from "lucide-react";
 import { ChannelHeader } from "@/components/ui/ChannelHeader";
 import Footer from "@/app/footer";
 
 export default function Home() {
   const { loading, error, channelData, videosData, fetchChannelData } = useChannelData();
   const [showDashboard, setShowDashboard] = useState(false);
+  
+  // Helper function to format numbers to K/M notation
+  const formatNumber = (num: number): string => {
+    if (num >= 1000000) {
+      return (num / 1000000).toFixed(1) + 'M';
+    } else if (num >= 1000) {
+      return (num / 1000).toFixed(1) + 'K';
+    }
+    return num.toString();
+  };
   
   // Bug Report Form States
   const [bugEmail, setBugEmail] = useState("");
@@ -158,12 +168,75 @@ export default function Home() {
 
             <ChannelHeader channel={channelData} onBack={handleBackToHome} />
             
-            {/* KPI Cards Placeholder */}
+            {/* KPI Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
-              <div className="h-32 bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-xl"></div>
-              <div className="h-32 bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-xl"></div>
-              <div className="h-32 bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-xl"></div>
-              <div className="h-32 bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-xl"></div>
+              {videosData && videosData.length > 0 ? (
+                <>
+                  {/* Usual Views Per Upload */}
+                  <div className="p-6 bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-xl">
+                    <p className="text-zinc-400 text-sm font-medium mb-2">Usual views per upload</p>
+                    <p className="text-2xl font-bold text-green-400">
+                      {formatNumber(
+                        Math.round(
+                          videosData.reduce((sum: number, video: any) => sum + (parseInt(video.statistics?.viewCount) || 0), 0) / videosData.length
+                        )
+                      )}
+                    </p>
+                  </div>
+
+                  {/* Engagement Rate */}
+                  <div className="p-6 bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-xl">
+                    <div className="flex items-center gap-2 mb-2">
+                      <p className="text-zinc-400 text-sm font-medium">Engagement</p>
+                      <div className="group relative">
+                        <Info className="w-4 h-4 text-zinc-500 cursor-help" />
+                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-zinc-800 text-zinc-300 text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                          Likes & Comments per view
+                        </div>
+                      </div>
+                    </div>
+                    <p className="text-2xl font-bold text-green-400">
+                      {(
+                        (videosData.reduce((sum: number, video: any) => {
+                          const likes = parseInt(video.statistics?.likeCount) || 0;
+                          const comments = parseInt(video.statistics?.commentCount) || 0;
+                          const views = parseInt(video.statistics?.viewCount) || 1;
+                          return sum + ((likes + comments) / views * 100);
+                        }, 0) / videosData.length)
+                      ).toFixed(2)}%
+                    </p>
+                  </div>
+
+                  {/* Top Video Views */}
+                  <div className="p-6 bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-xl">
+                    <p className="text-zinc-400 text-sm font-medium mb-2">Top Video Views</p>
+                    <p className="text-2xl font-bold text-green-400">
+                      {formatNumber(
+                        Math.max(
+                          ...videosData.map((video: any) => parseInt(video.statistics?.viewCount) || 0)
+                        )
+                      )}
+                    </p>
+                  </div>
+
+                  {/* Est. Earnings */}
+                  <div className="p-6 bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-xl">
+                    <p className="text-zinc-400 text-sm font-medium mb-2">Est. Total Earnings</p>
+                    <p className="text-2xl font-bold text-green-400">
+                      ${formatNumber(
+                        (videosData.reduce((sum: number, video: any) => sum + (parseInt(video.statistics?.viewCount) || 0), 0) / 1000) * 4
+                      )}
+                    </p>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="h-32 bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-xl"></div>
+                  <div className="h-32 bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-xl"></div>
+                  <div className="h-32 bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-xl"></div>
+                  <div className="h-32 bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-xl"></div>
+                </>
+              )}
             </div>
             
             {/* Video Grid Placeholder */}

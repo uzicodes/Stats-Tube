@@ -93,7 +93,7 @@ export function ChannelHeader({ channel, onBack }: ChannelHeaderProps) {
               onClick={() => setActiveTab("Overview")}
               className={`px-3 py-2 text-sm border rounded-lg transition-colors ${
                 activeTab === "Overview" 
-                  ? "text-green-400 border-green-400" 
+                  ? "text-amber-400 border-amber-400" 
                   : "text-zinc-300 border-zinc-600 hover:border-zinc-400 hover:text-zinc-100"
               }`}
             >
@@ -103,7 +103,7 @@ export function ChannelHeader({ channel, onBack }: ChannelHeaderProps) {
               onClick={() => setActiveTab("Trends")}
               className={`px-3 py-2 text-sm border rounded-lg transition-colors ${
                 activeTab === "Trends" 
-                  ? "text-green-400 border-green-400" 
+                  ? "text-amber-400 border-amber-400" 
                   : "text-zinc-300 border-zinc-600 hover:border-zinc-400 hover:text-zinc-100"
               }`}
             >
@@ -113,7 +113,7 @@ export function ChannelHeader({ channel, onBack }: ChannelHeaderProps) {
               onClick={() => setActiveTab("Videos")}
               className={`px-3 py-2 text-sm border rounded-lg transition-colors ${
                 activeTab === "Videos" 
-                  ? "text-green-400 border-green-400" 
+                  ? "text-amber-400 border-amber-400" 
                   : "text-zinc-300 border-zinc-600 hover:border-zinc-400 hover:text-zinc-100"
               }`}
             >
@@ -123,7 +123,7 @@ export function ChannelHeader({ channel, onBack }: ChannelHeaderProps) {
               onClick={() => setActiveTab("Compare")}
               className={`px-3 py-2 text-sm border rounded-lg transition-colors ${
                 activeTab === "Compare" 
-                  ? "text-green-400 border-green-400" 
+                  ? "text-amber-400 border-amber-400" 
                   : "text-zinc-300 border-zinc-600 hover:border-zinc-400 hover:text-zinc-100"
               }`}
             >
