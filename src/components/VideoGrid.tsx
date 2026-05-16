@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import { ExternalLink, DollarSign, TrendingUp } from "lucide-react";
 
@@ -8,10 +9,29 @@ interface VideoGridProps {
 }
 
 export function VideoGrid({ videosData }: VideoGridProps) {
+  const [filterType, setFilterType] = useState<'videos' | 'shorts'>('videos');
   if (!videosData || videosData.length === 0) return null;
 
-  // Calculate channel baseline to determine "Above Avg" badges
-  const avgViews = videosData.reduce((sum, v) => sum + (parseInt(v.statistics?.viewCount) || 0), 0) / videosData.length;
+  // Helper: Convert duration string to seconds
+  const durationToSeconds = (duration: string): number => {
+    const match = duration.match(/PT(\d+H)?(\d+M)?(\d+S)?/);
+    if (!match) return 0;
+    const h = match[1] ? parseInt(match[1]) : 0;
+    const m = match[2] ? parseInt(match[2]) : 0;
+    const s = match[3] ? parseInt(match[3]) : 0;
+    return h * 3600 + m * 60 + s;
+  };
+
+  // Separate shorts and videos (shorts are under 60 seconds)
+  const shorts = videosData.filter(v => durationToSeconds(v.contentDetails?.duration || 'PT0S') < 60).slice(0, 50);
+  const longVideos = videosData.filter(v => durationToSeconds(v.contentDetails?.duration || 'PT0S') >= 60).slice(0, 50);
+  const filteredVideos = filterType === 'videos' ? longVideos : shorts;
+
+  // Combine displayed videos for average calculation
+  const displayedVideos = [...longVideos, ...shorts];
+  const avgViews = displayedVideos.length > 0 
+    ? displayedVideos.reduce((sum, v) => sum + (parseInt(v.statistics?.viewCount) || 0), 0) / displayedVideos.length
+    : 0;
 
   // Helper: Format large numbers (498000000 -> 498.0M)
   const formatViews = (num: number) => {
@@ -53,11 +73,33 @@ export function VideoGrid({ videosData }: VideoGridProps) {
   return (
     <div className="w-full mt-8 animate-in slide-in-from-bottom-10 duration-700 delay-300">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="font-bold text-zinc-100 uppercase tracking-wider text-sm">Videos <span className="text-zinc-500 font-normal normal-case ml-2">{videosData.length} analyzed</span></h2>
+        <h2 className="font-bold text-zinc-100 uppercase tracking-wider text-sm">Content <span className="text-zinc-500 font-normal normal-case ml-2">{filteredVideos.length} shown</span></h2>
+        <div className="inline-flex gap-0 bg-zinc-900/50 border border-zinc-800 rounded-lg p-1">
+          <button
+            onClick={() => setFilterType('videos')}
+            className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+              filterType === 'videos'
+                ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                : 'text-zinc-400 hover:text-zinc-300'
+            }`}
+          >
+            Long Videos ({longVideos.length})
+          </button>
+          <button
+            onClick={() => setFilterType('shorts')}
+            className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+              filterType === 'shorts'
+                ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                : 'text-zinc-400 hover:text-zinc-300'
+            }`}
+          >
+            Shorts ({shorts.length})
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {videosData.map((video) => {
+        {filteredVideos.map((video) => {
           const views = parseInt(video.statistics?.viewCount) || 0;
           const likes = parseInt(video.statistics?.likeCount) || 0;
           const comments = parseInt(video.statistics?.commentCount) || 0;

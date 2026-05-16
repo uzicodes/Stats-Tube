@@ -110,14 +110,14 @@ export function ChannelHeader({ channel, onBack }: ChannelHeaderProps) {
               Trends
             </button>
             <button 
-              onClick={() => setActiveTab("Videos")}
+              onClick={() => setActiveTab("Content")}
               className={`px-3 py-2 text-sm border rounded-lg transition-colors ${
-                activeTab === "Videos" 
+                activeTab === "Content" 
                   ? "text-amber-400 border-amber-400" 
                   : "text-zinc-300 border-zinc-600 hover:border-zinc-400 hover:text-zinc-100"
               }`}
             >
-              Videos
+              Content
             </button>
             <button 
               onClick={() => setActiveTab("Compare")}
