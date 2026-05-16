@@ -2,6 +2,7 @@
 
 import { ChannelHeader } from "@/components/ui/ChannelHeader";
 import { TrendsCharts } from "@/components/TrendsCharts";
+import { VideoGrid } from "@/components/VideoGrid";
 import { Info } from "lucide-react";
 
 interface DashboardProps {
@@ -192,6 +193,9 @@ export function Dashboard({ channelData, videosData, onBack }: DashboardProps) {
       
       {/* Trends Charts */}
       <TrendsCharts videosData={videosData} />
+      
+      {/* The Video Grid */}
+      <VideoGrid videosData={videosData} />
     </div>
   );
 }
