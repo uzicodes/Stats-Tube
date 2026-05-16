@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { SearchInput } from "@/components/ui/SearchInput"; 
 import Galaxy from "@/components/Galaxy";
 import { useChannelData } from "@/hooks/useChannelData";
@@ -19,13 +19,40 @@ export default function Home() {
   const [bugSuccess, setBugSuccess] = useState(false);
 
   const handleAnalyze = async (type: 'handle' | 'channelId', value: string) => {
+    // Save current session to browser storage
+    sessionStorage.setItem("st_searchType", type);
+    sessionStorage.setItem("st_searchValue", value);
+    sessionStorage.setItem("st_showDashboard", "true");
+
     await fetchChannelData(type, value);
     setShowDashboard(true);
   };
 
   const handleBackToHome = () => {
+    // Clear session so a refresh keeps them on the homepage
+    sessionStorage.removeItem("st_searchType");
+    sessionStorage.removeItem("st_searchValue");
+    sessionStorage.setItem("st_showDashboard", "false");
+    
     setShowDashboard(false);
   };
+
+  const hasRestored = useRef(false);
+
+  useEffect(() => {
+    // Prevent double-fetching in React Strict Mode
+    if (hasRestored.current) return;
+    hasRestored.current = true;
+
+    const savedType = sessionStorage.getItem("st_searchType");
+    const savedValue = sessionStorage.getItem("st_searchValue");
+    const isDashboardActive = sessionStorage.getItem("st_showDashboard");
+
+    // If they were on the dashboard before refreshing, automatically re-analyze!
+    if (isDashboardActive === "true" && savedType && savedValue && !channelData) {
+      handleAnalyze(savedType as 'handle' | 'channelId', savedValue);
+    }
+  }, []);
 
   const handleBugSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,7 +71,7 @@ export default function Home() {
     <div className="min-h-screen bg-zinc-950 text-zinc-50 selection:bg-zinc-800 relative overflow-hidden flex flex-col">
       {/* Backgrounds */}
       {!showDashboard && (
-        <div className="absolute inset-0 pointer-events-none fixed z-0">
+        <div className="absolute inset-0 pointer-events-none z-0">
           <Galaxy className="absolute inset-0" starSpeed={0.5} density={1} hueShift={140} speed={1} glowIntensity={0.3} saturation={0} mouseRepulsion repulsionStrength={2} twinkleIntensity={0.3} rotationSpeed={0.1} transparent />
         </div>
       )}

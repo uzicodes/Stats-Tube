@@ -51,12 +51,12 @@ export function VideoGrid({ videosData }: VideoGridProps) {
   };
 
   return (
-    <div className="w-full mt-10 animate-in slide-in-from-bottom-10 duration-700 delay-300">
-      <div className="flex items-center justify-between mb-6">
+    <div className="w-full mt-8 animate-in slide-in-from-bottom-10 duration-700 delay-300">
+      <div className="flex items-center justify-between mb-4">
         <h2 className="font-bold text-zinc-100 uppercase tracking-wider text-sm">Videos <span className="text-zinc-500 font-normal normal-case ml-2">{videosData.length} analyzed</span></h2>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {videosData.map((video) => {
           const views = parseInt(video.statistics?.viewCount) || 0;
           const likes = parseInt(video.statistics?.likeCount) || 0;
@@ -75,7 +75,7 @@ export function VideoGrid({ videosData }: VideoGridProps) {
             <div key={video.id} className="flex flex-col bg-zinc-950/40 border border-zinc-800/80 rounded-2xl overflow-hidden hover:border-zinc-700 transition-colors group">
               
               {/* THUMBNAIL */}
-              <div className="relative w-full aspect-video bg-zinc-900 border-b border-zinc-800/80">
+              <div className="relative w-full aspect-video h-32 bg-zinc-900 border-b border-zinc-800/80">
                 <Image 
                   src={video.snippet?.thumbnails?.maxres?.url || video.snippet?.thumbnails?.high?.url} 
                   alt={video.snippet?.title}
@@ -98,53 +98,53 @@ export function VideoGrid({ videosData }: VideoGridProps) {
               </div>
 
               {/* CARD CONTENT */}
-              <div className="p-5 flex flex-col grow">
+              <div className="p-3 flex flex-col grow">
                 {/* Title & Date */}
-                <h3 className="font-bold text-zinc-100 text-base line-clamp-2 leading-snug mb-2 group-hover:text-indigo-400 transition-colors">
+                <h3 className="font-bold text-zinc-100 text-sm line-clamp-2 leading-tight mb-0.5 group-hover:text-emerald-400 transition-colors">
                   {video.snippet?.title}
                 </h3>
-                <p className="text-sm text-zinc-500 mb-4">{timeAgo(video.snippet?.publishedAt)}</p>
+                <p className="text-xs text-zinc-500 mb-2">{timeAgo(video.snippet?.publishedAt)}</p>
 
                 {/* Badges Row */}
-                <div className="flex flex-wrap gap-2 mb-4">
-                  <span className="inline-flex items-center px-2 py-1 rounded-md text-[11px] font-medium bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+                <div className="flex flex-wrap gap-1 mb-2">
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-medium bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
                     {engagement.toFixed(2)}% engagement
                   </span>
-                  <span className={`inline-flex items-center px-2 py-1 rounded-md text-[11px] font-medium border ${score > 75 ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' : 'bg-zinc-500/10 text-zinc-400 border-zinc-500/20'}`}>
+                  <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-medium border ${score > 75 ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' : 'bg-zinc-500/10 text-zinc-400 border-zinc-500/20'}`}>
                     Score {score}
                   </span>
                   {isAboveAvg && (
-                    <span className="inline-flex items-center px-2 py-1 rounded-md text-[11px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                       Above avg
                     </span>
                   )}
                   {percentAbove > 100 && (
-                    <span className="inline-flex items-center px-2 py-1 rounded-md text-[11px] font-medium bg-orange-500/10 text-orange-400 border border-orange-500/20 mt-1">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-medium bg-orange-500/10 text-orange-400 border border-orange-500/20">
                       Unusual spike
                     </span>
                   )}
                 </div>
 
                 {/* Views & Performance */}
-                <div className="flex items-end justify-between mb-4 mt-auto">
-                  <div className="text-3xl font-extrabold text-zinc-50 tracking-tight">
+                <div className="flex items-end justify-between mb-2 mt-auto">
+                  <div className="text-xl font-extrabold text-zinc-50 tracking-tight">
                     {formatViews(views)}
                   </div>
                   {isAboveAvg && (
-                    <div className="flex items-center text-emerald-400 text-sm font-medium">
-                      <TrendingUp className="w-4 h-4 mr-1" />
-                      {percentAbove}% above avg
+                    <div className="flex items-center text-emerald-400 text-xs font-medium">
+                      <TrendingUp className="w-3 h-3 mr-1" />
+                      {percentAbove}%
                     </div>
                   )}
                 </div>
 
                 {/* Earnings Box */}
-                <div className="flex items-center justify-between p-3 rounded-xl bg-zinc-900/50 border border-zinc-800/50 mb-4">
-                  <div className="flex items-center text-zinc-400 text-sm">
-                    <DollarSign className="w-4 h-4 mr-1 opacity-70" />
+                <div className="flex items-center justify-between p-1.5 rounded-lg bg-zinc-900/50 border border-zinc-800/50 mb-2">
+                  <div className="flex items-center text-zinc-400 text-xs">
+                    <DollarSign className="w-2.5 h-2.5 mr-1 opacity-70" />
                     Est. Earnings
                   </div>
-                  <div className="font-bold text-emerald-400">
+                  <div className="font-bold text-emerald-400 text-xs">
                     ${formatViews((views / 1000) * 4)}
                   </div>
                 </div>
