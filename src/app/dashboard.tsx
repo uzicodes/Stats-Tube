@@ -1,6 +1,7 @@
 "use client";
 
 import { ChannelHeader } from "@/components/ui/ChannelHeader";
+import { TrendsCharts } from "@/components/TrendsCharts";
 import { Info } from "lucide-react";
 
 interface DashboardProps {
@@ -189,10 +190,8 @@ export function Dashboard({ channelData, videosData, onBack }: DashboardProps) {
         )}
       </div>
       
-      {/* Video Grid Placeholder */}
-      <div className="h-96 w-full bg-zinc-900/50 border border-zinc-800 rounded-xl mt-6 flex items-center justify-center text-zinc-500">
-        Video Grid goes here!
-      </div>
+      {/* Trends Charts */}
+      <TrendsCharts videosData={videosData} />
     </div>
   );
 }
