@@ -11,22 +11,25 @@ interface TrendsChartsProps {
 
 export function TrendsCharts({ videosData }: TrendsChartsProps) {
   // Process and reverse data so oldest is on the left, newest on the right
+  // Limit to latest 50 videos to keep charts clean and readable
   const chartData = useMemo(() => {
     if (!videosData) return [];
     
-    return videosData.map((video) => {
-      const views = parseInt(video.statistics?.viewCount) || 0;
-      const likes = parseInt(video.statistics?.likeCount) || 0;
-      const comments = parseInt(video.statistics?.commentCount) || 0;
-      const engagement = views > 0 ? ((likes + comments) / views) * 100 : 0;
-      
-      return {
-        title: video.snippet?.title || "Video",
-        views: views,
-        engagement: Number(engagement.toFixed(2)),
-        date: new Date(video.snippet?.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-      };
-    }).reverse();
+    return videosData
+      .slice(0, 50) // Take only the latest 50 videos for cleaner charts
+      .map((video) => {
+        const views = parseInt(video.statistics?.viewCount) || 0;
+        const likes = parseInt(video.statistics?.likeCount) || 0;
+        const comments = parseInt(video.statistics?.commentCount) || 0;
+        const engagement = views > 0 ? ((likes + comments) / views) * 100 : 0;
+        
+        return {
+          title: video.snippet?.title || "Video",
+          views: views,
+          engagement: Number(engagement.toFixed(2)),
+          date: new Date(video.snippet?.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+        };
+      }).reverse();
   }, [videosData]);
 
   // Process data for the Top Videos chart (sorted by views descending)
@@ -95,7 +98,7 @@ export function TrendsCharts({ videosData }: TrendsChartsProps) {
       
       {/* VIEW TREND CHART */}
       <div className="p-6 bg-zinc-900/40 border border-zinc-800 rounded-xl flex flex-col">
-        <h3 className="text-xs font-bold tracking-widest text-zinc-400 uppercase mb-6">View Trend — Latest {videosData.length}</h3>
+        <h3 className="text-xs font-bold tracking-widest text-zinc-400 uppercase mb-6">View Trend — Latest 50</h3>
         <div className="h-62.5 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={chartData} margin={{ top: 5, right: 0, left: -20, bottom: 0 }}>

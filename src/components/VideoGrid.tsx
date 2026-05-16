@@ -73,7 +73,7 @@ export function VideoGrid({ videosData }: VideoGridProps) {
   return (
     <div className="w-full mt-8 animate-in slide-in-from-bottom-10 duration-700 delay-300">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="font-bold text-zinc-100 uppercase tracking-wider text-sm">Content <span className="text-zinc-500 font-normal normal-case ml-2">{filteredVideos.length} shown</span></h2>
+        <h2 className="font-bold text-zinc-100 uppercase tracking-wider text-sm">Content <span className="text-zinc-500 font-normal normal-case ml-2">(Latest {filteredVideos.length} shown)</span></h2>
         <div className="inline-flex gap-0 bg-zinc-900/50 border border-zinc-800 rounded-lg p-1">
           <button
             onClick={() => setFilterType('videos')}
@@ -83,7 +83,7 @@ export function VideoGrid({ videosData }: VideoGridProps) {
                 : 'text-zinc-400 hover:text-zinc-300'
             }`}
           >
-            Long Videos ({longVideos.length})
+            Long Videos
           </button>
           <button
             onClick={() => setFilterType('shorts')}
@@ -93,7 +93,7 @@ export function VideoGrid({ videosData }: VideoGridProps) {
                 : 'text-zinc-400 hover:text-zinc-300'
             }`}
           >
-            Shorts ({shorts.length})
+            Shorts
           </button>
         </div>
       </div>
