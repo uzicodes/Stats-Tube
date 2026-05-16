@@ -43,9 +43,11 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-50 selection:bg-zinc-800 relative overflow-hidden flex flex-col">
       {/* Backgrounds */}
-      <div className="absolute inset-0 pointer-events-none">
-        <Galaxy className="absolute inset-0" starSpeed={0.5} density={1} hueShift={140} speed={1} glowIntensity={0.3} saturation={0} mouseRepulsion repulsionStrength={2} twinkleIntensity={0.3} rotationSpeed={0.1} transparent />
-      </div>
+      {!showDashboard && (
+        <div className="absolute inset-0 pointer-events-none fixed z-0">
+          <Galaxy className="absolute inset-0" starSpeed={0.5} density={1} hueShift={140} speed={1} glowIntensity={0.3} saturation={0} mouseRepulsion repulsionStrength={2} twinkleIntensity={0.3} rotationSpeed={0.1} transparent />
+        </div>
+      )}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-size-[14px_24px] mask-[radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none"></div>
       
       {/* Top Navigation */}
