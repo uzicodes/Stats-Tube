@@ -64,16 +64,16 @@ export function ChannelHeader({ channel, onBack }: ChannelHeaderProps) {
           </div>
         </div>
 
-        {/* Stats Row &  Channel Creation Date */}
-        <div className="flex items-center gap-8 mt-8 justify-between">
-          <div className="flex items-center gap-8">
-            <div className="inline-flex gap-8 px-5 py-3 bg-zinc-800/50 border border-zinc-700 rounded-xl">
+        {/* Stats Row */}
+        <div className="flex flex-col xl:flex-row items-center gap-6 xl:gap-8 mt-8 justify-between">
+          <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-8 w-full xl:w-auto">
+            <div className="flex flex-wrap justify-center sm:flex-nowrap gap-4 sm:gap-8 px-5 py-3 bg-zinc-800/50 border border-zinc-700 rounded-xl">
               <div className="flex items-center gap-2">
                 <span className="text-sm text-blue-400">Subscribers</span>
                 <span className="text-lg font-bold text-zinc-100">{formatCompact(stats.subscriberCount)}</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-sm text-blue-400">Total views</span>
+                <span className="text-sm text-blue-400 whitespace-nowrap">Total views</span>
                 <span className="text-lg font-bold text-zinc-100">{formatCompact(stats.viewCount)}</span>
               </div>
               <div className="flex items-center gap-2">
@@ -82,13 +82,13 @@ export function ChannelHeader({ channel, onBack }: ChannelHeaderProps) {
               </div>
             </div>
             
-            <div>
+            <div className="text-center sm:text-left">
               <p className="text-sm text-zinc-400">Channel created</p>
               <p className="text-sm font-semibold text-zinc-100">{getChannelCreatedDate()}</p>
             </div>
           </div>
           
-          <div className="flex gap-3 items-center">
+          <div className="flex flex-wrap justify-center gap-3 items-center mt-2 xl:mt-0">
             <button 
               onClick={() => setActiveTab("Overview")}
               className={`px-3 py-2 text-sm border rounded-lg transition-colors ${
