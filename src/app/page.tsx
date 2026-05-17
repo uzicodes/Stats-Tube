@@ -9,7 +9,7 @@ import { Dashboard } from "@/app/dashboard";
 import Footer from "@/app/footer";
 
 export default function Home() {
-  const { loading, error, channelData, videosData, fetchChannelData } = useChannelData();
+  const { loading, error, channelData, videosData, fetchChannelData, resetState } = useChannelData();
   const [showDashboard, setShowDashboard] = useState(false);
   
   // Bug Report Form States
@@ -22,10 +22,16 @@ export default function Home() {
     // Save current session to browser storage
     sessionStorage.setItem("st_searchType", type);
     sessionStorage.setItem("st_searchValue", value);
-    sessionStorage.setItem("st_showDashboard", "true");
 
-    await fetchChannelData(type, value);
-    setShowDashboard(true);
+    const success = await fetchChannelData(type, value);
+    
+    // Only show dashboard if fetch was successful
+    if (success) {
+      sessionStorage.setItem("st_showDashboard", "true");
+      setShowDashboard(true);
+    } else {
+      sessionStorage.setItem("st_showDashboard", "false");
+    }
   };
 
   const handleBackToHome = () => {
@@ -34,6 +40,8 @@ export default function Home() {
     sessionStorage.removeItem("st_searchValue");
     sessionStorage.setItem("st_showDashboard", "false");
     
+    // Reset all state from the hook
+    resetState();
     setShowDashboard(false);
   };
 
@@ -101,8 +109,18 @@ export default function Home() {
 
         {/* Error State */}
         {error && (
-          <div className="w-full max-w-2xl mx-auto mt-6 p-4 bg-red-900/20 border border-red-500/30 text-red-400 rounded-lg text-left animate-in fade-in">
-            {error}
+          <div className="w-full max-w-2xl mx-auto mt-6 space-y-4">
+            <div className="p-4 bg-red-900/20 border border-red-500/30 text-red-400 rounded-lg text-left animate-in fade-in">
+              {error}
+            </div>
+            <div className="flex justify-center">
+              <button
+                onClick={handleBackToHome}
+                className="px-6 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium text-sm transition-colors"
+              >
+                ← Back to Home
+              </button>
+            </div>
           </div>
         )}
 

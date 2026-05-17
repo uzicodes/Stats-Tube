@@ -7,7 +7,7 @@ export function useChannelData() {
   const [channelData, setChannelData] = useState<any>(null);
   const [videosData, setVideosData] = useState<any[] | null>(null);
 
-  const fetchChannelData = async (type: 'handle' | 'channelId', value: string) => {
+  const fetchChannelData = async (type: 'handle' | 'channelId', value: string): Promise<boolean> => {
     setLoading(true);
     setError(null);
     setChannelData(null);
@@ -61,7 +61,7 @@ export function useChannelData() {
       if (!videoIdString) {
         setVideosData([]); // Channel has no videos
         setLoading(false);
-        return;
+        return true;
       }
 
       // 3. Fetch Batch Video Statistics (YouTube API limit is 50 IDs per request)
@@ -83,13 +83,22 @@ export function useChannelData() {
       }
 
       setVideosData(allStats);
+      return true;
 
     } catch (err: any) {
       console.error(err);
       setError(err.message || "An unexpected error occurred while fetching data.");
+      return false;
     } finally {
       setLoading(false);
     }
+  };
+
+  const resetState = () => {
+    setLoading(false);
+    setError(null);
+    setChannelData(null);
+    setVideosData(null);
   };
 
   return {
@@ -97,6 +106,7 @@ export function useChannelData() {
     error,
     channelData,
     videosData,
-    fetchChannelData
+    fetchChannelData,
+    resetState
   };
 }

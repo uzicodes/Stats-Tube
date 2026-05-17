@@ -37,7 +37,7 @@ export function ChannelHeader({ channel, onBack }: ChannelHeaderProps) {
   return (
     <>
       {/* Back Button */}
-      <button onClick={handleBackClick} className="inline-flex items-center gap-2 text-zinc-400 hover:text-zinc-100 transition-colors mb-6 bg-none border-none cursor-pointer">
+      <button onClick={handleBackClick} className="inline-flex items-center gap-2 text-zinc-400 hover:text-green-400 transition-colors mb-6 bg-none border-none cursor-pointer">
         <ArrowLeft className="w-4 h-4" />
         <span className="text-sm">Back to Home</span>
       </button>
