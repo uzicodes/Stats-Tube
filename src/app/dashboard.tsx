@@ -3,6 +3,7 @@
 import { ChannelHeader } from "@/components/ui/ChannelHeader";
 import { TrendsCharts } from "@/components/TrendsCharts";
 import { VideoGrid } from "@/components/VideoGrid";
+import { CompareSection } from "@/components/Compare";
 import { Info } from "lucide-react";
 
 interface DashboardProps {
@@ -196,6 +197,9 @@ export function Dashboard({ channelData, videosData, onBack }: DashboardProps) {
       
       {/* The Video Grid */}
       <VideoGrid videosData={videosData} />
+
+      {/* Head-to-Head Comparison */}
+      <CompareSection baseChannel={channelData} baseVideos={videosData} />
     </div>
   );
 }
