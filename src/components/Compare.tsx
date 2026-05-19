@@ -4,7 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { Search, X, Swords } from "lucide-react";
 import { useChannelData } from "@/hooks/useChannelData";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
 
 interface CompareSectionProps {
   baseChannel: any;
@@ -94,9 +94,14 @@ export function CompareSection({ baseChannel, baseVideos }: CompareSectionProps)
   // Chart Data Preparation
   const chartData = [
     {
-      metric: "Avg Views (Recent)",
-      [baseChannel.snippet.title]: baseAvgViews,
-      [compChannel.snippet.title]: compAvgViews,
+      name: baseChannel.snippet.title,
+      views: baseAvgViews,
+      fill: "#6366f1"
+    },
+    {
+      name: compChannel.snippet.title,
+      views: compAvgViews,
+      fill: "#f43f5e"
     }
   ];
 
@@ -188,16 +193,18 @@ export function CompareSection({ baseChannel, baseVideos }: CompareSectionProps)
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={chartData} margin={{ top: 20, right: 0, left: 0, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#27272a" />
-                <XAxis dataKey="metric" hide />
+                <XAxis dataKey="name" stroke="#a1a1aa" fontSize={12} tickLine={false} axisLine={false} />
                 <YAxis tickFormatter={formatCompact} stroke="#52525b" fontSize={12} tickLine={false} axisLine={false} />
                 <Tooltip 
                   cursor={{ fill: '#27272a', opacity: 0.4 }} 
                   contentStyle={{ backgroundColor: '#18181b', borderColor: '#27272a', borderRadius: '8px' }}
                   formatter={(value: any) => [formatCompact(Number(value)), "Avg Views"]}
                 />
-                <Legend iconType="circle" wrapperStyle={{ fontSize: '12px', paddingTop: '20px' }} />
-                <Bar dataKey={baseChannel.snippet.title} fill="#6366f1" radius={[4, 4, 0, 0]} maxBarSize={60} />
-                <Bar dataKey={compChannel.snippet.title} fill="#f43f5e" radius={[4, 4, 0, 0]} maxBarSize={60} />
+                <Bar dataKey="views" radius={[4, 4, 0, 0]} maxBarSize={60}>
+                  {chartData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.fill} />
+                  ))}
+                </Bar>
               </BarChart>
             </ResponsiveContainer>
           </div>
