@@ -65,7 +65,7 @@ export function CompareSection({ baseChannel, baseVideos }: CompareSectionProps)
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             placeholder="Enter competitor @handle..."
-            className="w-full bg-zinc-950 border border-zinc-700 rounded-full py-3 pl-12 pr-4 text-zinc-100 focus:outline-none focus:border-indigo-500 transition-colors"
+            className="w-full bg-zinc-950 border border-zinc-700 rounded-full py-3 pl-12 pr-4 text-xs md:text-base text-zinc-100 focus:outline-none focus:border-indigo-500 transition-colors"
             disabled={loading}
           />
           <button 

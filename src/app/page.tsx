@@ -175,7 +175,7 @@ export default function Home() {
             </div>
 
             {/* Bug Report Form */}
-            <div className="max-w-2xl mx-auto w-full pt-8 pb-8 text-left">
+            <div className="max-w-lg mx-auto w-full pt-8 pb-8 text-left">
               <div className="p-6 sm:p-8 rounded-2xl bg-zinc-900/40 border border-zinc-800/50 backdrop-blur-md">
                 <div className="flex items-center gap-3 mb-6">
                   <Bug className="w-6 h-6 text-zinc-300" />

@@ -43,7 +43,7 @@ export function SearchInput({ onAnalyze, isLoading }: SearchInputProps) {
           value={url}
           onChange={(e) => setUrl(e.target.value)}
           placeholder="Paste YouTube channel URL or @handle..."
-          className="h-14 pl-10 pr-24 text-lg bg-zinc-950 border-zinc-800 rounded-full shadow-sm focus-visible:ring-zinc-700"
+          className="h-14 pl-10 pr-24 text-xs md:text-base lg:text-lg bg-zinc-950 border-zinc-800 rounded-full shadow-sm focus-visible:ring-zinc-700"
           disabled={isLoading}
         />
         <Button 
