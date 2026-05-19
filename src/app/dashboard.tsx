@@ -27,7 +27,7 @@ export function Dashboard({ channelData, videosData, onBack }: DashboardProps) {
       <ChannelHeader channel={channelData} onBack={onBack} />
       
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
+      <div id="overview" className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6 scroll-mt-24">
         {videosData && videosData.length > 0 ? (
           <>
             {/* Usual Views Per Upload */}
@@ -193,13 +193,19 @@ export function Dashboard({ channelData, videosData, onBack }: DashboardProps) {
       </div>
       
       {/* Trends Charts */}
-      <TrendsCharts videosData={videosData} />
+      <div id="trends" className="scroll-mt-24">
+        <TrendsCharts videosData={videosData} />
+      </div>
       
       {/* The Video Grid */}
-      <VideoGrid videosData={videosData} />
+      <div id="content" className="scroll-mt-24">
+        <VideoGrid videosData={videosData} />
+      </div>
 
       {/* Head-to-Head Comparison */}
-      <CompareSection baseChannel={channelData} baseVideos={videosData} />
+      <div id="compare" className="scroll-mt-24">
+        <CompareSection baseChannel={channelData} baseVideos={videosData} />
+      </div>
     </div>
   );
 }

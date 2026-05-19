@@ -34,6 +34,15 @@ export function ChannelHeader({ channel, onBack }: ChannelHeaderProps) {
     }
   };
 
+  const scrollToSection = (sectionId: string) => {
+    const capitalizedId = sectionId.charAt(0).toUpperCase() + sectionId.slice(1);
+    setActiveTab(capitalizedId);
+    const element = document.getElementById(sectionId.toLowerCase());
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
   return (
     <>
       {/* Back Button */}
@@ -90,7 +99,7 @@ export function ChannelHeader({ channel, onBack }: ChannelHeaderProps) {
           
           <div className="flex flex-wrap justify-center gap-3 items-center mt-2 xl:mt-0">
             <button 
-              onClick={() => setActiveTab("Overview")}
+              onClick={() => scrollToSection("overview")}
               className={`px-3 py-2 text-sm border rounded-lg transition-colors ${
                 activeTab === "Overview" 
                   ? "text-amber-400 border-amber-400" 
@@ -100,7 +109,7 @@ export function ChannelHeader({ channel, onBack }: ChannelHeaderProps) {
               Overview
             </button>
             <button 
-              onClick={() => setActiveTab("Trends")}
+              onClick={() => scrollToSection("trends")}
               className={`px-3 py-2 text-sm border rounded-lg transition-colors ${
                 activeTab === "Trends" 
                   ? "text-amber-400 border-amber-400" 
@@ -110,7 +119,7 @@ export function ChannelHeader({ channel, onBack }: ChannelHeaderProps) {
               Trends
             </button>
             <button 
-              onClick={() => setActiveTab("Content")}
+              onClick={() => scrollToSection("content")}
               className={`px-3 py-2 text-sm border rounded-lg transition-colors ${
                 activeTab === "Content" 
                   ? "text-amber-400 border-amber-400" 
@@ -120,7 +129,7 @@ export function ChannelHeader({ channel, onBack }: ChannelHeaderProps) {
               Content
             </button>
             <button 
-              onClick={() => setActiveTab("Compare")}
+              onClick={() => scrollToSection("compare")}
               className={`px-3 py-2 text-sm border rounded-lg transition-colors ${
                 activeTab === "Compare" 
                   ? "text-amber-400 border-amber-400" 
