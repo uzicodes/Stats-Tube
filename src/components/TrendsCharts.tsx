@@ -9,6 +9,26 @@ interface TrendsChartsProps {
   videosData: any[];
 }
 
+// Helper function to interpolate between two hex colors
+const interpolateColor = (color1: string, color2: string, t: number): string => {
+  const hex1 = color1.replace('#', '');
+  const hex2 = color2.replace('#', '');
+  
+  const r1 = parseInt(hex1.substring(0, 2), 16);
+  const g1 = parseInt(hex1.substring(2, 4), 16);
+  const b1 = parseInt(hex1.substring(4, 6), 16);
+  
+  const r2 = parseInt(hex2.substring(0, 2), 16);
+  const g2 = parseInt(hex2.substring(2, 4), 16);
+  const b2 = parseInt(hex2.substring(4, 6), 16);
+  
+  const r = Math.round(r1 + (r2 - r1) * t);
+  const g = Math.round(g1 + (g2 - g1) * t);
+  const b = Math.round(b1 + (b2 - b1) * t);
+  
+  return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+};
+
 export function TrendsCharts({ videosData }: TrendsChartsProps) {
   // Process and reverse data so oldest is on the left, newest on the right
   // Limit to latest 50 videos to keep charts clean and readable
@@ -193,10 +213,37 @@ export function TrendsCharts({ videosData }: TrendsChartsProps) {
               />
               <Bar 
                 dataKey="views" 
-                fill="#818cf8" 
                 radius={[0, 4, 4, 0]}
                 barSize={16}
-              />
+              >
+                {topVideosData.map((entry, index) => {
+                  const maxViews = Math.max(...topVideosData.map(v => v.views));
+                  const minViews = Math.min(...topVideosData.map(v => v.views));
+                  const range = maxViews - minViews || 1;
+                  const normalized = (entry.views - minViews) / range; // 0 to 1
+                  
+                  // Color interpolation between 3 colors
+                  // Lowest: #9AB8EF, Middle: #729CE9, Highest: #497EE3
+                  const colors = ['#9AB8EF', '#729CE9', '#497EE3'];
+                  
+                  let color: string;
+                  if (normalized < 0.5) {
+                    // Interpolate between color 0 and 1
+                    const t = normalized * 2; // 0 to 1
+                    const c1 = colors[0];
+                    const c2 = colors[1];
+                    color = interpolateColor(c1, c2, t);
+                  } else {
+                    // Interpolate between color 1 and 2
+                    const t = (normalized - 0.5) * 2; // 0 to 1
+                    const c1 = colors[1];
+                    const c2 = colors[2];
+                    color = interpolateColor(c1, c2, t);
+                  }
+                  
+                  return <Cell key={`cell-${index}`} fill={color} />;
+                })}
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
         </div>
