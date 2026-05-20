@@ -7,10 +7,12 @@ import { useChannelData } from "@/hooks/useChannelData";
 import { Activity, Shield, TrendingUp, Bug, CheckCircle2 } from "lucide-react";
 import { Dashboard } from "@/app/dashboard";
 import Footer from "@/app/footer";
+import GlobalLoader from "@/app/GlobalLoader";
 
 export default function Home() {
   const { loading, error, channelData, videosData, fetchChannelData, resetState } = useChannelData();
   const [showDashboard, setShowDashboard] = useState(false);
+  const [initialLoadComplete, setInitialLoadComplete] = useState(false);
   
   // Bug Report Form States
   const [bugEmail, setBugEmail] = useState("");
@@ -62,6 +64,16 @@ export default function Home() {
     }
   }, []);
 
+  // Mark initial page load as complete after component mounts
+  useEffect(() => {
+    // Small delay to ensure all page elements are rendered before hiding loader
+    const timer = setTimeout(() => {
+      setInitialLoadComplete(true);
+    }, 800);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   const handleBugSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!bugDetails.trim()) return;
@@ -97,15 +109,10 @@ export default function Home() {
         </header>
       )}
 
+      {/* Global Loader - Shows while page loads or during API calls */}
+      {(!initialLoadComplete || loading) && <GlobalLoader />}
+
       <main className="grow relative flex flex-col items-center p-4 sm:p-8 z-10 w-full mt-4">
-        
-        {/* Loading State */}
-        {loading && (
-          <div className="w-full max-w-4xl mx-auto mt-12 p-8 text-center text-zinc-400 animate-pulse">
-            <div className="inline-block w-8 h-8 border-4 border-zinc-600 border-t-zinc-200 rounded-full animate-spin mb-4"></div>
-            <p>Scanning channel and running proprietary analytics...</p>
-          </div>
-        )}
 
         {/* Error State */}
         {error && (
