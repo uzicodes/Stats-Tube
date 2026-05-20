@@ -80,9 +80,9 @@ export function ChannelHeader({ channel, onBack }: ChannelHeaderProps) {
   };
 
   return (
-    <div className="sticky top-0 z-50 pt-4 pb-4 bg-zinc-950/90 backdrop-blur-xl transition-all">
-      {/* Top Navigation Row */}
-      <div className="flex items-center justify-between mb-4 w-full">
+    <>
+      {/* Top Navigation Row (Sticky) */}
+      <div className="sticky top-0 z-50 pt-4 pb-4 mb-4 bg-zinc-950/95 backdrop-blur-xl transition-all flex items-center justify-between w-full">
         {/* Back Button */}
         <button onClick={handleBackClick} className="inline-flex items-center gap-2 text-zinc-400 hover:text-green-400 transition-colors bg-none border-none cursor-pointer">
           <ArrowLeft className="w-4 h-4" />
@@ -134,7 +134,7 @@ export function ChannelHeader({ channel, onBack }: ChannelHeaderProps) {
         </div>
       </div>
 
-      {/* Main Channel Card */}
+      {/* Main Channel Card (Static, scrolls away) */}
       <div className="w-full bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-4 relative z-10 p-6 shadow-2xl">
         {/* Profile Section */}
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
@@ -246,6 +246,6 @@ export function ChannelHeader({ channel, onBack }: ChannelHeaderProps) {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

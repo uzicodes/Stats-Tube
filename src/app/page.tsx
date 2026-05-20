@@ -76,7 +76,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-50 selection:bg-zinc-800 relative overflow-hidden flex flex-col">
+    <div className="min-h-screen bg-zinc-950 text-zinc-50 selection:bg-zinc-800 relative flex flex-col">
       {/* Backgrounds */}
       {!showDashboard && (
         <div className="absolute inset-0 pointer-events-none z-0">

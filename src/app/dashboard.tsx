@@ -23,7 +23,7 @@ export function Dashboard({ channelData, videosData, onBack }: DashboardProps) {
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto mt-4 space-y-6 text-left animate-in slide-in-from-bottom-8 duration-700">
+    <div className="w-full max-w-5xl mx-auto mt-4 space-y-6 text-left">
       <ChannelHeader channel={channelData} onBack={onBack} />
       
       {/* KPI Cards */}
