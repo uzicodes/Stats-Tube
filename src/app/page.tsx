@@ -74,17 +74,44 @@ export default function Home() {
     return () => clearTimeout(timer);
   }, []);
 
-  const handleBugSubmit = (e: React.FormEvent) => {
+  const handleBugSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!bugDetails.trim()) return;
     setIsSubmittingBug(true);
-    setTimeout(() => {
+
+    try {
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          access_key: "25e65c88-7b8e-4e47-95f0-c289b90213e5",
+          subject: "🚨 New Bug Report - Stats-Tube",
+          from_name: "Stats-Tube Bug Tracker",
+          email: bugEmail || "No email provided",
+          message: bugDetails,
+        }),
+      });
+
+      const result = await response.json();
+      
+      if (result.success) {
+        setBugSuccess(true);
+        setBugEmail("");
+        setBugDetails("");
+        setTimeout(() => setBugSuccess(false), 3000);
+      } else {
+        console.error("Submission failed", result);
+        alert("Failed to send report. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error sending bug report:", error);
+      alert("An error occurred while sending the report.");
+    } finally {
       setIsSubmittingBug(false);
-      setBugSuccess(true);
-      setBugEmail("");
-      setBugDetails("");
-      setTimeout(() => setBugSuccess(false), 3000);
-    }, 1000);
+    }
   };
 
   return (
@@ -109,7 +136,7 @@ export default function Home() {
         </header>
       )}
 
-      {/* Global Loader - Shows while page loads or during API calls */}
+      {/* Global Loader */}
       {(!initialLoadComplete || loading) && <GlobalLoader />}
 
       <main className="grow relative flex flex-col items-center p-4 sm:p-8 z-10 w-full mt-4">
