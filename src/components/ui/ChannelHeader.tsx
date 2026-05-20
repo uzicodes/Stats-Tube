@@ -3,9 +3,10 @@
 import Image from "next/image";
 import { ArrowLeft } from "lucide-react";
 import { useState } from "react";
+import ReactCountryFlag from "react-country-flag";
 
 interface ChannelHeaderProps {
-  channel: any; // We'll type this strictly later
+  channel: any; 
   onBack?: () => void;
 }
 
@@ -14,7 +15,7 @@ export function ChannelHeader({ channel, onBack }: ChannelHeaderProps) {
   const stats = channel.statistics;
   const [activeTab, setActiveTab] = useState<string>("Overview");
   
-  // Format numbers to look clean (e.g., 1,500,000 -> 1.5M)
+  // Format numbers (1,500,000 -> 1.5M)
   const formatCompact = (num: string | number) => {
     return Intl.NumberFormat('en-US', {
       notation: "compact",
@@ -22,13 +23,13 @@ export function ChannelHeader({ channel, onBack }: ChannelHeaderProps) {
     }).format(Number(num));
   };
 
-  // Format channel creation date (month, year)
+  // channel creation date (month, year)
   const getChannelCreatedDate = () => {
     const date = new Date(snippet.publishedAt);
     return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
   };
 
-  // Calculate the next logical subscriber milestone and progress
+  // Calculate milestone & progress
   const getMilestoneData = (subs: number) => {
     let nextMilestone = 1000;
     if (subs >= 100000000) nextMilestone = Math.ceil(subs / 10000000) * 10000000; // 10M increments
@@ -56,7 +57,6 @@ export function ChannelHeader({ channel, onBack }: ChannelHeaderProps) {
     return { label: "Emerging", color: "text-emerald-400 border-emerald-500/30 bg-emerald-500/10" };
   };
 
-  // Zero-dependency function to convert a 2-letter country code into an emoji flag
   const getFlagEmoji = (countryCode: string) => {
     if (!countryCode || countryCode.length !== 2) return countryCode;
     return countryCode
@@ -89,7 +89,7 @@ export function ChannelHeader({ channel, onBack }: ChannelHeaderProps) {
           <span className="text-sm">Back to Home</span>
         </button>
 
-        {/* Tab Buttons aligned to the right */}
+        {/* Tab Buttons */}
         <div className="flex flex-wrap justify-end gap-2 sm:gap-3 items-center">
           <button 
             onClick={() => scrollToSection("overview")}
@@ -157,10 +157,10 @@ export function ChannelHeader({ channel, onBack }: ChannelHeaderProps) {
           </div>
         </div>
 
-        {/* Lower Data Bar (Milestones & Identity) */}
+        {/* (Milestones & Identity) */}
         <div className="flex flex-col xl:flex-row items-start xl:items-center justify-between gap-6 mt-4 pt-4 border-t border-zinc-800/50">
           
-          {/* Left: Core Stats Group */}
+          {/* Core Stats Group */}
           <div className="flex flex-wrap items-center gap-4 sm:gap-6">
             <div className="flex gap-4 sm:gap-6 px-5 py-3 bg-zinc-800/40 border border-zinc-700/50 rounded-xl">
               <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
@@ -190,7 +190,7 @@ export function ChannelHeader({ channel, onBack }: ChannelHeaderProps) {
             );
           })()}
           
-          {/* Right: Context & Milestones */}
+          {/* Context & Milestones */}
           <div className="flex flex-wrap items-center gap-4 w-full xl:w-auto bg-zinc-900/40 p-3 rounded-xl border border-zinc-800/80">
             
             {/* Channel Created */}
@@ -205,8 +205,17 @@ export function ChannelHeader({ channel, onBack }: ChannelHeaderProps) {
                 <div className="w-px h-8 bg-zinc-800 hidden sm:block"></div>
                 <div className="flex flex-col">
                   <span className="text-[10px] uppercase tracking-wider font-semibold text-zinc-500">Location</span>
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-lg leading-none">{getFlagEmoji(snippet.country)}</span>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <ReactCountryFlag 
+                      countryCode={snippet.country} 
+                      svg 
+                      style={{
+                        width: '1.25em',
+                        height: '1.25em',
+                        borderRadius: '2px'
+                      }}
+                      title={snippet.country}
+                    />
                     <span className="text-sm font-medium text-zinc-200">{snippet.country}</span>
                   </div>
                 </div>
