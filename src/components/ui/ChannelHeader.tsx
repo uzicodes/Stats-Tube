@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { ArrowLeft } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ReactCountryFlag from "react-country-flag";
 
 interface ChannelHeaderProps {
@@ -14,6 +14,43 @@ export function ChannelHeader({ channel, onBack }: ChannelHeaderProps) {
   const snippet = channel.snippet;
   const stats = channel.statistics;
   const [activeTab, setActiveTab] = useState<string>("Overview");
+  
+  // Track scroll position to highlight active section
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = [
+        { id: "overview", name: "Overview" },
+        { id: "trends", name: "Trends" },
+        { id: "content", name: "Content" },
+        { id: "compare", name: "Compare" }
+      ];
+
+      // Get all section elements
+      const sectionElements = sections.map(section => ({
+        ...section,
+        element: document.getElementById(section.id)
+      })).filter(s => s.element);
+
+      if (sectionElements.length === 0) return;
+
+      // Find which section is currently in view (top of viewport)
+      const viewportCenter = window.innerHeight / 2;
+      
+      for (const section of sectionElements) {
+        if (section.element) {
+          const rect = section.element.getBoundingClientRect();
+          // If section is in the upper half of viewport, consider it active
+          if (rect.top < viewportCenter && rect.bottom > 0) {
+            setActiveTab(section.name);
+            break;
+          }
+        }
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
   
   // Format numbers (1,500,000 -> 1.5M)
   const formatCompact = (num: string | number) => {
