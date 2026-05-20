@@ -28,6 +28,42 @@ export function ChannelHeader({ channel, onBack }: ChannelHeaderProps) {
     return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
   };
 
+  // Calculate the next logical subscriber milestone and progress
+  const getMilestoneData = (subs: number) => {
+    let nextMilestone = 1000;
+    if (subs >= 100000000) nextMilestone = Math.ceil(subs / 10000000) * 10000000; // 10M increments
+    else if (subs >= 10000000) nextMilestone = Math.ceil(subs / 1000000) * 1000000; // 1M increments
+    else if (subs >= 1000000) nextMilestone = Math.ceil(subs / 500000) * 500000; // 500K increments
+    else if (subs >= 100000) nextMilestone = Math.ceil(subs / 100000) * 100000; // 100K increments
+    else if (subs >= 10000) nextMilestone = Math.ceil(subs / 10000) * 10000; // 10K increments
+    
+    const prevMilestone = nextMilestone > 100000000 ? nextMilestone - 10000000 : 
+                          nextMilestone > 10000000 ? nextMilestone - 1000000 : 
+                          nextMilestone > 1000000 ? nextMilestone - 500000 : 
+                          nextMilestone > 100000 ? nextMilestone - 100000 : 0;
+                          
+    const progress = Math.min(100, Math.max(0, ((subs - prevMilestone) / (nextMilestone - prevMilestone)) * 100));
+    
+    return { nextMilestone, progress };
+  };
+
+  // Determine Creator Tier
+  const getCreatorTier = (subs: number) => {
+    if (subs >= 50000000) return { label: "Elite Creator", color: "text-rose-400 border-rose-500/30 bg-rose-500/10" };
+    if (subs >= 10000000) return { label: "Diamond Tier", color: "text-cyan-400 border-cyan-500/30 bg-cyan-500/10" };
+    if (subs >= 1000000) return { label: "Gold Tier", color: "text-yellow-400 border-yellow-500/30 bg-yellow-500/10" };
+    if (subs >= 100000) return { label: "Silver Tier", color: "text-zinc-300 border-zinc-500/30 bg-zinc-500/10" };
+    return { label: "Emerging", color: "text-emerald-400 border-emerald-500/30 bg-emerald-500/10" };
+  };
+
+  // Zero-dependency function to convert a 2-letter country code into an emoji flag
+  const getFlagEmoji = (countryCode: string) => {
+    if (!countryCode || countryCode.length !== 2) return countryCode;
+    return countryCode
+      .toUpperCase()
+      .replace(/./g, (char) => String.fromCodePoint(char.charCodeAt(0) + 127397));
+  };
+
   const handleBackClick = () => {
     if (onBack) {
       onBack();
@@ -121,26 +157,83 @@ export function ChannelHeader({ channel, onBack }: ChannelHeaderProps) {
           </div>
         </div>
 
-        {/* Stats Row (Buttons Removed) */}
-        <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-8 mt-8">
-          <div className="flex flex-wrap justify-center sm:flex-nowrap gap-4 sm:gap-8 px-5 py-3 bg-zinc-800/50 border border-zinc-700 rounded-xl">
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-blue-400">Subscribers</span>
-              <span className="text-lg font-bold text-zinc-100">{formatCompact(stats.subscriberCount)}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-blue-400 whitespace-nowrap">Total views</span>
-              <span className="text-lg font-bold text-zinc-100">{formatCompact(stats.viewCount)}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-blue-400">Videos</span>
-              <span className="text-lg font-bold text-zinc-100">{formatCompact(stats.videoCount)}</span>
+        {/* Lower Data Bar (Milestones & Identity) */}
+        <div className="flex flex-col xl:flex-row items-start xl:items-center justify-between gap-6 mt-4 pt-4 border-t border-zinc-800/50">
+          
+          {/* Left: Core Stats Group */}
+          <div className="flex flex-wrap items-center gap-4 sm:gap-6">
+            <div className="flex gap-4 sm:gap-6 px-5 py-3 bg-zinc-800/40 border border-zinc-700/50 rounded-xl">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                <span className="text-xs uppercase tracking-wider font-semibold text-blue-400">Subs</span>
+                <span className="text-lg font-bold text-zinc-100">{formatCompact(stats.subscriberCount)}</span>
+              </div>
+              <div className="w-px bg-zinc-700/50 hidden sm:block"></div>
+              <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                <span className="text-xs uppercase tracking-wider font-semibold text-blue-400">Views</span>
+                <span className="text-lg font-bold text-zinc-100">{formatCompact(stats.viewCount)}</span>
+              </div>
+              <div className="w-px bg-zinc-700/50 hidden sm:block"></div>
+              <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                <span className="text-xs uppercase tracking-wider font-semibold text-blue-400">Videos</span>
+                <span className="text-lg font-bold text-zinc-100">{formatCompact(stats.videoCount)}</span>
+              </div>
             </div>
           </div>
           
-          <div className="text-center sm:text-left">
-            <p className="text-sm text-zinc-400">Channel created</p>
-            <p className="text-sm font-semibold text-zinc-100">{getChannelCreatedDate()}</p>
+          {/* Tier Badge */}
+          {(() => {
+            const tier = getCreatorTier(parseInt(stats.subscriberCount) || 0);
+            return (
+              <div className={`px-3 py-1.5 rounded-lg border text-xs font-bold uppercase tracking-wider ${tier.color}`}>
+                {tier.label}
+              </div>
+            );
+          })()}
+          
+          {/* Right: Context & Milestones */}
+          <div className="flex flex-wrap items-center gap-4 w-full xl:w-auto bg-zinc-900/40 p-3 rounded-xl border border-zinc-800/80">
+            
+            {/* Channel Created */}
+            <div className="flex flex-col">
+              <span className="text-[10px] uppercase tracking-wider font-semibold text-zinc-500">Established</span>
+              <span className="text-sm font-medium text-zinc-200">{getChannelCreatedDate()}</span>
+            </div>
+
+            {/* Country */}
+            {snippet.country && (
+              <>
+                <div className="w-px h-8 bg-zinc-800 hidden sm:block"></div>
+                <div className="flex flex-col">
+                  <span className="text-[10px] uppercase tracking-wider font-semibold text-zinc-500">Location</span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-lg leading-none">{getFlagEmoji(snippet.country)}</span>
+                    <span className="text-sm font-medium text-zinc-200">{snippet.country}</span>
+                  </div>
+                </div>
+              </>
+            )}
+
+            <div className="w-px h-8 bg-zinc-800 hidden sm:block"></div>
+
+            {/* Milestone Tracker */}
+            {(() => {
+              const { nextMilestone, progress } = getMilestoneData(parseInt(stats.subscriberCount) || 0);
+              return (
+                <div className="flex flex-col w-full sm:w-48">
+                  <div className="flex justify-between items-end mb-1.5">
+                    <span className="text-[10px] uppercase tracking-wider font-semibold text-zinc-500">Next Milestone</span>
+                    <span className="text-xs font-bold text-zinc-500">{formatCompact(nextMilestone)}</span>
+                  </div>
+                  <div className="w-full h-2 bg-zinc-800 rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-linear-to-r from-green-900 to-green-400 rounded-full transition-all duration-1000 ease-out" 
+                      style={{ width: `${progress}%` }}
+                    ></div>
+                  </div>
+                </div>
+              );
+            })()}
+
           </div>
         </div>
       </div>
