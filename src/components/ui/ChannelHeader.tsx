@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { ArrowLeft } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import ReactCountryFlag from "react-country-flag";
 
 interface ChannelHeaderProps {
@@ -14,10 +14,15 @@ export function ChannelHeader({ channel, onBack }: ChannelHeaderProps) {
   const snippet = channel.snippet;
   const stats = channel.statistics;
   const [activeTab, setActiveTab] = useState<string>("Overview");
+  const isUserNavigatingRef = useRef(false);
   
   // Track scroll position to highlight active section
   useEffect(() => {
     const handleScroll = () => {
+      // Skip scroll-based tab switching if user just clicked a button
+      if (isUserNavigatingRef.current) {
+        return;
+      }
       const sections = [
         { id: "overview", name: "Overview" },
         { id: "trends", name: "Trends" },
@@ -110,9 +115,18 @@ export function ChannelHeader({ channel, onBack }: ChannelHeaderProps) {
   const scrollToSection = (sectionId: string) => {
     const capitalizedId = sectionId.charAt(0).toUpperCase() + sectionId.slice(1);
     setActiveTab(capitalizedId);
+    
+    // Prevent scroll handler from interfering with the navigation
+    isUserNavigatingRef.current = true;
+    
     const element = document.getElementById(sectionId.toLowerCase());
     if (element) {
       element.scrollIntoView({ behavior: "smooth", block: "start" });
+      
+      // Re-enable scroll-based detection after scroll animation completes
+      setTimeout(() => {
+        isUserNavigatingRef.current = false;
+      }, 1000);
     }
   };
 
