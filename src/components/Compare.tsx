@@ -105,6 +105,20 @@ export function CompareSection({ baseChannel, baseVideos }: CompareSectionProps)
     }
   ];
 
+  // Custom tooltip for Reach Comparison to highlight Avg Views in green
+  const CustomCompareTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      const value = payload[0].value;
+      return (
+        <div className="bg-zinc-900 border border-zinc-800 p-3 rounded-lg shadow-xl">
+          <p className="text-zinc-100 font-medium text-sm mb-1">{label}</p>
+          <p className="text-emerald-400 font-bold">{formatCompact(Number(value))} Avg Views</p>
+        </div>
+      );
+    }
+    return null;
+  };
+
   return (
     <div className="w-full mt-12 animate-in fade-in duration-700">
       <div className="flex items-center justify-between mb-6">
@@ -197,8 +211,7 @@ export function CompareSection({ baseChannel, baseVideos }: CompareSectionProps)
                 <YAxis tickFormatter={formatCompact} stroke="#52525b" fontSize={12} tickLine={false} axisLine={false} />
                 <Tooltip 
                   cursor={{ fill: '#27272a', opacity: 0.4 }} 
-                  contentStyle={{ backgroundColor: '#18181b', borderColor: '#27272a', borderRadius: '8px' }}
-                  formatter={(value: any) => [formatCompact(Number(value)), "Avg Views"]}
+                  content={<CustomCompareTooltip />}
                 />
                 <Bar dataKey="views" radius={[4, 4, 0, 0]} maxBarSize={60}>
                   {chartData.map((entry, index) => (

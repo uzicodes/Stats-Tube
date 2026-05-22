@@ -133,7 +133,7 @@ export function TrendsCharts({ videosData }: TrendsChartsProps) {
       
       {/* VIEW TREND CHART */}
       <div className="p-6 bg-zinc-900/40 border border-zinc-800 rounded-xl flex flex-col">
-        <h3 className="text-xs font-bold tracking-widest text-zinc-400 uppercase mb-6">View Trend — Latest 50</h3>
+        <h3 className="text-xs font-bold tracking-widest text-[#F16AAD] uppercase mb-6 text-center">View Trend — Latest 50</h3>
         <div className="h-62.5 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={chartData} margin={{ top: 5, right: 0, left: -20, bottom: 0 }}>
@@ -168,7 +168,7 @@ export function TrendsCharts({ videosData }: TrendsChartsProps) {
 
       {/* ENGAGEMENT CHART */}
       <div className="p-6 bg-zinc-900/40 border border-zinc-800 rounded-xl flex flex-col">
-        <h3 className="text-xs font-bold tracking-widest text-zinc-400 uppercase mb-6">Engagement By Video</h3>
+        <h3 className="text-xs font-bold tracking-widest text-[#F16AAD] uppercase mb-6 text-center">Engagement By Video</h3>
         <div className="h-62.5 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={chartData} margin={{ top: 5, right: 0, left: -20, bottom: 0 }}>
@@ -195,7 +195,7 @@ export function TrendsCharts({ videosData }: TrendsChartsProps) {
 
       {/* TOP VIDEOS BY VIEWS CHART */}
       <div className="p-6 bg-zinc-900/40 border border-zinc-800 rounded-xl flex flex-col lg:col-span-2">
-        <h3 className="text-xs font-bold tracking-widest text-zinc-400 uppercase mb-6">Top Videos by Views</h3>
+        <h3 className="text-xs font-bold tracking-widest text-[#F16AAD] uppercase mb-6 text-center">Top Videos by Views</h3>
         <div className="h-96 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart 
