@@ -114,7 +114,7 @@ export function VideoGrid({ videosData }: VideoGridProps) {
           const score = Math.min(Math.round(50 + (isAboveAvg ? 20 : -10) + (engagement * 10)), 99);
 
           return (
-            <div key={video.id} className="flex flex-col bg-zinc-950/40 border border-zinc-800/80 rounded-2xl overflow-hidden hover:border-zinc-700 transition-colors group">
+            <div key={video.id} className="flex flex-col bg-zinc-950/40 border border-zinc-800/80 rounded-2xl overflow-hidden hover:border-emerald-500/50 transition-colors group">
               
               {/* THUMBNAIL */}
               <div className="relative w-full aspect-video h-32 bg-zinc-900 border-b border-zinc-800/80">
@@ -152,7 +152,7 @@ export function VideoGrid({ videosData }: VideoGridProps) {
                   <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-medium bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
                     {engagement.toFixed(2)}% engagement
                   </span>
-                  <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-medium border ${score > 75 ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' : 'bg-zinc-500/10 text-zinc-400 border-zinc-500/20'}`}>
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-medium bg-zinc-500/10 text-zinc-400 border border-zinc-500/20">
                     Score {score}
                   </span>
                   {isAboveAvg && (
