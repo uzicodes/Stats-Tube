@@ -11,6 +11,7 @@ interface VideoGridProps {
 export function VideoGrid({ videosData }: VideoGridProps) {
   const [filterType, setFilterType] = useState<'videos' | 'shorts'>('videos');
   const [sortBy, setSortBy] = useState<'views' | 'engagement' | 'date' | 'earnings'>('date');
+  const [displayLimit, setDisplayLimit] = useState(50);
   if (!videosData || videosData.length === 0) return null;
 
   // Helper: Convert duration string to seconds
@@ -24,8 +25,8 @@ export function VideoGrid({ videosData }: VideoGridProps) {
   };
 
   // Separate shorts and videos (shorts are under 60 seconds)
-  const shorts = videosData.filter(v => durationToSeconds(v.contentDetails?.duration || 'PT0S') < 60).slice(0, 50);
-  const longVideos = videosData.filter(v => durationToSeconds(v.contentDetails?.duration || 'PT0S') >= 60).slice(0, 50);
+  const shorts = videosData.filter(v => durationToSeconds(v.contentDetails?.duration || 'PT0S') < 60).slice(0, 100);
+  const longVideos = videosData.filter(v => durationToSeconds(v.contentDetails?.duration || 'PT0S') >= 60).slice(0, 100);
   let filteredVideos = filterType === 'videos' ? longVideos : shorts;
 
   // Apply sorting based on sortBy state
@@ -98,7 +99,7 @@ export function VideoGrid({ videosData }: VideoGridProps) {
   return (
     <div className="w-full mt-8 animate-in slide-in-from-bottom-10 duration-700 delay-300">
       <div className="flex items-center justify-between mb-4 flex-wrap gap-4">
-        <h2 className="font-bold text-zinc-100 uppercase tracking-wider text-sm">Content <span className="text-zinc-500 font-normal normal-case ml-2">(Latest {filteredVideos.length} shown)</span></h2>
+        <h2 className="font-bold text-zinc-100 uppercase tracking-wider text-sm">Content <span className="text-zinc-500 font-normal normal-case ml-2">(Showing {Math.min(displayLimit, filteredVideos.length)} of {filteredVideos.length})</span></h2>
         <div className="flex items-center gap-3">
           {/* Toggle Buttons */}
           <div className="inline-flex gap-0 bg-zinc-900/50 border border-zinc-800 rounded-lg p-1">
@@ -142,7 +143,7 @@ export function VideoGrid({ videosData }: VideoGridProps) {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filteredVideos.map((video) => {
+        {filteredVideos.slice(0, displayLimit).map((video) => {
           const views = parseInt(video.statistics?.viewCount) || 0;
           const likes = parseInt(video.statistics?.likeCount) || 0;
           const comments = parseInt(video.statistics?.commentCount) || 0;
@@ -248,6 +249,20 @@ export function VideoGrid({ videosData }: VideoGridProps) {
             </div>
           );
         })}
+        
+        {/* Load More Button */}
+        {displayLimit < filteredVideos.length && (
+          <div className="flex items-center justify-center bg-zinc-950/40 border-2 border-dashed border-zinc-800 rounded-2xl overflow-hidden hover:border-emerald-500/50 transition-colors group">
+            <button
+              onClick={() => setDisplayLimit(prev => Math.min(prev + 50, filteredVideos.length))}
+              className="w-full h-full flex flex-col items-center justify-center py-8 px-4 gap-3"
+            >
+              <div className="text-2xl font-bold text-emerald-400">+</div>
+              <p className="text-zinc-300 font-medium text-sm">Load More</p>
+              <p className="text-zinc-500 text-xs">{filteredVideos.length - displayLimit} more {filterType === 'videos' ? 'videos' : 'shorts'}</p>
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
