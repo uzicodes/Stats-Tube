@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { ExternalLink, DollarSign, TrendingUp } from "lucide-react";
+import { ExternalLink, DollarSign, TrendingUp, ChevronDown } from "lucide-react";
 
 interface VideoGridProps {
   videosData: any[];
@@ -10,6 +10,7 @@ interface VideoGridProps {
 
 export function VideoGrid({ videosData }: VideoGridProps) {
   const [filterType, setFilterType] = useState<'videos' | 'shorts'>('videos');
+  const [sortBy, setSortBy] = useState<'views' | 'engagement' | 'date' | 'earnings'>('date');
   if (!videosData || videosData.length === 0) return null;
 
   // Helper: Convert duration string to seconds
@@ -25,7 +26,31 @@ export function VideoGrid({ videosData }: VideoGridProps) {
   // Separate shorts and videos (shorts are under 60 seconds)
   const shorts = videosData.filter(v => durationToSeconds(v.contentDetails?.duration || 'PT0S') < 60).slice(0, 50);
   const longVideos = videosData.filter(v => durationToSeconds(v.contentDetails?.duration || 'PT0S') >= 60).slice(0, 50);
-  const filteredVideos = filterType === 'videos' ? longVideos : shorts;
+  let filteredVideos = filterType === 'videos' ? longVideos : shorts;
+
+  // Apply sorting based on sortBy state
+  filteredVideos = [...filteredVideos].sort((a, b) => {
+    switch (sortBy) {
+      case 'views':
+        return (parseInt(b.statistics?.viewCount) || 0) - (parseInt(a.statistics?.viewCount) || 0);
+      case 'engagement':
+        const engagementA = (parseInt(a.statistics?.viewCount) || 1) > 0 
+          ? ((parseInt(a.statistics?.likeCount) || 0) + (parseInt(a.statistics?.commentCount) || 0)) / (parseInt(a.statistics?.viewCount) || 1)
+          : 0;
+        const engagementB = (parseInt(b.statistics?.viewCount) || 1) > 0 
+          ? ((parseInt(b.statistics?.likeCount) || 0) + (parseInt(b.statistics?.commentCount) || 0)) / (parseInt(b.statistics?.viewCount) || 1)
+          : 0;
+        return engagementB - engagementA;
+      case 'date':
+        return new Date(b.snippet?.publishedAt).getTime() - new Date(a.snippet?.publishedAt).getTime();
+      case 'earnings':
+        const earningsA = (parseInt(a.statistics?.viewCount) || 0) / 1000 * 4;
+        const earningsB = (parseInt(b.statistics?.viewCount) || 0) / 1000 * 4;
+        return earningsB - earningsA;
+      default:
+        return 0;
+    }
+  });
 
   // Combine displayed videos for average calculation
   const displayedVideos = [...longVideos, ...shorts];
@@ -72,29 +97,47 @@ export function VideoGrid({ videosData }: VideoGridProps) {
 
   return (
     <div className="w-full mt-8 animate-in slide-in-from-bottom-10 duration-700 delay-300">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-4 flex-wrap gap-4">
         <h2 className="font-bold text-zinc-100 uppercase tracking-wider text-sm">Content <span className="text-zinc-500 font-normal normal-case ml-2">(Latest {filteredVideos.length} shown)</span></h2>
-        <div className="inline-flex gap-0 bg-zinc-900/50 border border-zinc-800 rounded-lg p-1">
-          <button
-            onClick={() => setFilterType('videos')}
-            className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-              filterType === 'videos'
-                ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                : 'text-zinc-400 hover:text-zinc-300'
-            }`}
-          >
-            Long Videos
-          </button>
-          <button
-            onClick={() => setFilterType('shorts')}
-            className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-              filterType === 'shorts'
-                ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                : 'text-zinc-400 hover:text-zinc-300'
-            }`}
-          >
-            Shorts
-          </button>
+        <div className="flex items-center gap-3">
+          {/* Toggle Buttons */}
+          <div className="inline-flex gap-0 bg-zinc-900/50 border border-zinc-800 rounded-lg p-1">
+            <button
+              onClick={() => setFilterType('videos')}
+              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                filterType === 'videos'
+                  ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                  : 'text-zinc-400 hover:text-zinc-300'
+              }`}
+            >
+              Long Videos
+            </button>
+            <button
+              onClick={() => setFilterType('shorts')}
+              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                filterType === 'shorts'
+                  ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                  : 'text-zinc-400 hover:text-zinc-300'
+              }`}
+            >
+              Shorts
+            </button>
+          </div>
+
+          {/* Sort Dropdown */}
+          <div className="relative">
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as 'views' | 'engagement' | 'date' | 'earnings')}
+              className="appearance-none px-3 py-1.5 pr-8 rounded-md text-sm font-medium bg-zinc-900/50 border border-zinc-800 text-zinc-300 hover:border-emerald-500/30 focus:border-emerald-500/50 focus:outline-none transition-colors cursor-pointer"
+            >
+              <option value="views">Sort by Views</option>
+              <option value="engagement">Sort by Engagement</option>
+              <option value="date">Sort by Date</option>
+              <option value="earnings">Sort by Earnings</option>
+            </select>
+            <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none" />
+          </div>
         </div>
       </div>
 
