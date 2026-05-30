@@ -84,39 +84,39 @@ The project follows a modular, serverless-optimized directory hierarchy.
   <img src="https://img.shields.io/badge/Setup &%20Installation-purple?style=for-the-badge" alt="Setup & Installation" height="34">
 </div>
 
+
+
 To run this project locally, follow these steps:
 
 1.  **Clone the repository:**
-```bash
-    git clone [https://github.com/utshochowdhury/stats-tube.git](https://github.com/utshochowdhury/stats-tube.git)
+    ```bash
+    git clone https://github.com/utshochowdhury/stats-tube.git
     cd stats-tube
     ```
 
 2.  **Install dependencies:**
-```bash
+    ```bash
     npm install
     ```
 
 3.  **Set up environment variables:**
     Create a `.env.local` file in the root directory and add the following context variables:
 
-```env
+    ```env
     # Google API Console Access Key
     YOUTUBE_API_KEY="your_official_youtube_api_key"
 
     # Upstash Redis Configuration (Serverless Rate Limiting)
-    UPSTASH_REDIS_REST_URL="[https://your-database-cluster-endpoint.upstash.io](https://your-database-cluster-endpoint.upstash.io)"
+    UPSTASH_REDIS_REST_URL="https://your-database-cluster-endpoint.upstash.io"
     UPSTASH_REDIS_REST_TOKEN="your_actual_upstash_rest_token_here"
     ```
 
 4.  **Run the development server:**
-```bash
+    ```bash
     npm run dev
     ```
 
     The application will launch and be available inside your local browser at `http://localhost:3000`.
-
-
 
 
 
