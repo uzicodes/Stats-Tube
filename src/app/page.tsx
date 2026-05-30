@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { SearchInput } from "@/components/ui/SearchInput"; 
+import { SearchInput } from "@/components/ui/SearchInput";
 import Galaxy from "@/components/Galaxy";
 import { useChannelData } from "@/hooks/useChannelData";
 import { Activity, Shield, TrendingUp, Bug, CheckCircle2 } from "lucide-react";
@@ -13,7 +13,7 @@ export default function Home() {
   const { loading, error, channelData, videosData, fetchChannelData, resetState } = useChannelData();
   const [showDashboard, setShowDashboard] = useState(false);
   const [initialLoadComplete, setInitialLoadComplete] = useState(false);
-  
+
   // Bug Report Form States
   const [bugEmail, setBugEmail] = useState("");
   const [bugDetails, setBugDetails] = useState("");
@@ -26,7 +26,7 @@ export default function Home() {
     sessionStorage.setItem("st_searchValue", value);
 
     const success = await fetchChannelData(type, value);
-    
+
     // Only show dashboard if fetch was successful
     if (success) {
       sessionStorage.setItem("st_showDashboard", "true");
@@ -41,7 +41,7 @@ export default function Home() {
     sessionStorage.removeItem("st_searchType");
     sessionStorage.removeItem("st_searchValue");
     sessionStorage.setItem("st_showDashboard", "false");
-    
+
     // Reset all state from the hook
     resetState();
     setShowDashboard(false);
@@ -96,7 +96,7 @@ export default function Home() {
       });
 
       const result = await response.json();
-      
+
       if (result.success) {
         setBugSuccess(true);
         setBugEmail("");
@@ -123,16 +123,16 @@ export default function Home() {
         </div>
       )}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-size-[14px_24px] mask-[radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none"></div>
-      
+
       {/* Top Navigation */}
       {!showDashboard && (
         <header className="w-full relative z-20 pt-6 px-4 sm:px-8 flex justify-center">
-           <div className="max-w-2xl w-full">
-              {/* Logo */}
-              <div className="flex justify-center mb-1">
-                <img src="/logo2.png" alt="Stats-Tube Logo" className="h-20 w-auto object-contain" />
-              </div>
-           </div>
+          <div className="max-w-2xl w-full">
+            {/* Logo */}
+            <div className="flex justify-center mb-1">
+              <img src="/logo2.png" alt="Stats-Tube Logo" className="h-20 w-auto object-contain" />
+            </div>
+          </div>
         </header>
       )}
 
@@ -180,10 +180,10 @@ export default function Home() {
 
             <div className="space-y-4">
               <h2 className="text-4xl text-transparent bg-clip-text bg-linear-to-r from-zinc-200 to-zinc-600" style={{ letterSpacing: 'normal', fontFamily: 'system-ui, sans-serif' }}>
-                Uncover channels' true performance.
+                Uncover True Performance !
               </h2>
               <p className="max-w-4xl mx-auto text-sm sm:text-base text-zinc-400">
-                Paste a YouTube URL, get instant data-driven intelligence. 
+                Paste a YouTube URL, get instant data-driven intelligence.
                 Track engagement rates and uncover momentum. <br />
                 No Logins Required.
               </p>
@@ -237,10 +237,10 @@ export default function Home() {
 
         {/* DASHBOARD */}
         {showDashboard && channelData && videosData && !loading && (
-          <Dashboard 
-            channelData={channelData} 
-            videosData={videosData} 
-            onBack={handleBackToHome} 
+          <Dashboard
+            channelData={channelData}
+            videosData={videosData}
+            onBack={handleBackToHome}
           />
         )}
 
