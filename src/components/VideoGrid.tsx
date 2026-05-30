@@ -158,7 +158,7 @@ export function VideoGrid({ videosData }: VideoGridProps) {
           const score = Math.min(Math.round(50 + (isAboveAvg ? 20 : -10) + (engagement * 10)), 99);
 
           return (
-            <div key={video.id} className="flex flex-col bg-zinc-950/40 border border-zinc-800/80 rounded-2xl overflow-hidden hover:border-emerald-500/50 transition-colors group">
+            <div key={video.id} className="flex flex-col bg-zinc-950/40 border border-zinc-800/80 rounded-2xl overflow-hidden hover:border-red-500/50 transition-colors group">
               
               {/* THUMBNAIL */}
               <div className="relative w-full aspect-video h-32 bg-zinc-900 border-b border-zinc-800/80">
@@ -186,7 +186,7 @@ export function VideoGrid({ videosData }: VideoGridProps) {
               {/* CARD CONTENT */}
               <div className="p-3 flex flex-col grow">
                 {/* Title & Date */}
-                <h3 className="font-bold text-zinc-100 text-sm line-clamp-2 leading-tight mb-0.5 group-hover:text-emerald-400 transition-colors">
+                <h3 className="font-bold text-zinc-100 text-sm line-clamp-2 leading-tight mb-0.5 group-hover:text-red-400 transition-colors">
                   {video.snippet?.title}
                 </h3>
                 <p className="text-xs text-zinc-500 mb-2">{timeAgo(video.snippet?.publishedAt)}</p>
