@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { 
   AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell 
 } from "recharts";
@@ -30,6 +30,15 @@ const interpolateColor = (color1: string, color2: string, t: number): string => 
 };
 
 export function TrendsCharts({ videosData }: TrendsChartsProps) {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    handleResize(); // Check on initial mount
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   // Process and reverse data so oldest is on the left, newest on the right
   // Limit to latest 50 videos to keep charts clean and readable
   const chartData = useMemo(() => {
@@ -63,14 +72,14 @@ export function TrendsCharts({ videosData }: TrendsChartsProps) {
         return {
           title: title,
           // Create a shorter version of the title for the Y-Axis so it doesn't break the layout
-          shortTitle: title.length > 45 ? title.substring(0, 45) + "..." : title,
+          shortTitle: title.length > (isMobile ? 15 : 45) ? title.substring(0, isMobile ? 15 : 45) + "..." : title,
           views: views,
           date: new Date(video.snippet?.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
         };
       })
       .sort((a, b) => b.views - a.views)
       .slice(0, 10); // Take the top 10 videos
-  }, [videosData]);
+  }, [videosData, isMobile]);
 
   // Formatter for large numbers on the Y-Axis (e.g., 1500000 -> 1.5M)
   const formatYAxis = (num: number) => {
@@ -201,22 +210,22 @@ export function TrendsCharts({ videosData }: TrendsChartsProps) {
             <BarChart 
               data={topVideosData} 
               layout="vertical"
-              margin={{ top: 5, right: 30, left: 250, bottom: 5 }}
+              margin={{ top: 5, right: isMobile ? 10 : 30, left: isMobile ? 100 : 250, bottom: 5 }}
             >
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#27272a" />
               <XAxis 
                 type="number" 
                 tickFormatter={formatYAxis} 
                 stroke="#52525b" 
-                tick={{ fontSize: 12, fill: '#fbbf24' }}
+                tick={{ fontSize: isMobile ? 10 : 12, fill: '#fbbf24' }}
                 tickLine={false}
                 axisLine={false}
               />
               <YAxis 
                 dataKey="shortTitle" 
                 type="category" 
-                width={240}
-                tick={{ fontSize: 12, fill: '#a1a1aa' }}
+                width={isMobile ? 90 : 240}
+                tick={{ fontSize: isMobile ? 10 : 12, fill: '#a1a1aa' }}
                 tickLine={false}
                 axisLine={false}
               />
