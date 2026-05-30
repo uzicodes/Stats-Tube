@@ -1,8 +1,40 @@
 import { NextResponse } from 'next/server';
+import { ratelimiter } from '@/lib/ratelimit';
 
 const YOUTUBE_API_URL = 'https://www.googleapis.com/youtube/v3';
 
 export async function GET(request: Request) {
+  // Identify user by IP for rate limiting
+  const ip = request.headers.get("x-forwarded-for") ?? "127.0.0.1";
+
+  try {
+    // Check rate limit state 
+    const { success, limit, reset, remaining } = await ratelimiter.limit(ip);
+
+    // If hit limit ? block & return 429 status
+    if (!success) {
+      return NextResponse.json(
+        {
+          error: {
+            message: "Too many requests. Please wait a minute before searching again."
+          },
+          retryAfter: reset
+        },
+        {
+          status: 429,
+          headers: {
+            "X-RateLimit-Limit": limit.toString(),
+            "X-RateLimit-Remaining": remaining.toString(),
+            "X-RateLimit-Reset": reset.toString(),
+          },
+        }
+      );
+    }
+  } catch (redisError) {
+    console.error('Rate Limiter Database Error:', redisError);
+  }
+
+  // Continue if rate-limit passed !
   const { searchParams } = new URL(request.url);
   const action = searchParams.get('action');
   const apiKey = process.env.YOUTUBE_API_KEY;
@@ -19,7 +51,7 @@ export async function GET(request: Request) {
       case 'channel':
         const handle = searchParams.get('handle');
         const channelId = searchParams.get('channelId');
-        
+
         if (handle) {
           // must include '@' when passed to API
           url = `${YOUTUBE_API_URL}/channels?part=snippet,statistics,contentDetails&forHandle=${handle}&key=${apiKey}`;
@@ -35,7 +67,7 @@ export async function GET(request: Request) {
         const playlistId = searchParams.get('playlistId');
         const pageToken = searchParams.get('pageToken') || '';
         const maxResults = searchParams.get('maxResults') || '50';
-        
+
         if (!playlistId) {
           return NextResponse.json({ error: { message: 'Must provide playlistId' } }, { status: 400 });
         }
@@ -45,7 +77,7 @@ export async function GET(request: Request) {
       // Fetch actual view/like stats of video IDs
       case 'stats':
         const ids = searchParams.get('ids');
-        
+
         if (!ids) {
           return NextResponse.json({ error: { message: 'Must provide comma-separated video ids' } }, { status: 400 });
         }
