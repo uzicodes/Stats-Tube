@@ -4,14 +4,14 @@
 
 @font-face {
   font-family: "Rajdhani Bold";
-  src: url("/fonts/rajdhani.semibold.ttf") format("truetype");
+  src: url("/fonts/rajdhani.semibold.woff2") format("woff2");
   font-weight: 700;
   font-style: normal;
 }
 
 @font-face {
   font-family: "Black Kastile Modern";
-  src: url("/fonts/Black%20Kastile%20Modern.otf") format("opentype");
+  src: url("/fonts/Black%20Kastile%20Modern.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
 }
