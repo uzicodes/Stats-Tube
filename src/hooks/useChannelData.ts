@@ -14,7 +14,7 @@ export function useChannelData() {
     setVideosData(null);
 
     try {
-      // 1. Fetch Channel Meta & Playlist ID
+      // Fetch Channel Meta & Playlist ID
       const channelRes = await fetch(`/api/youtube?action=channel&${type}=${encodeURIComponent(value)}`);
       const channelJson = await channelRes.json();
 
@@ -30,7 +30,7 @@ export function useChannelData() {
         throw new Error("Could not find uploads playlist for this channel.");
       }
 
-      // 2. Fetch Playlist Items (Restored to your original 200 target!)
+      // Fetch Playlist Items (200 target!)
       let allVideoIds: string[] = [];
       let pageToken = '';
       let totalFetched = 0;
@@ -49,7 +49,7 @@ export function useChannelData() {
         allVideoIds = [...allVideoIds, ...videoIds];
         totalFetched += videoIds.length;
 
-        // If there's no nextPageToken, we've reached the end
+        // If no nextPageToken? end
         if (!playlistJson.nextPageToken) {
           break;
         }
@@ -64,11 +64,11 @@ export function useChannelData() {
         return true;
       }
 
-      // 3. Fetch Batch Video Statistics (Concurrent fetch for maximum speed)
+      // Fetch Batch Video Statistics 
       const batchSize = 50;
       const statsPromises = [];
 
-      // We queue up the requests instead of waiting for them one by one
+      // queue up requests 
       for (let i = 0; i < allVideoIds.length; i += batchSize) {
         const batch = allVideoIds.slice(i, i + batchSize);
         const batchIdString = batch.join(',');
@@ -78,10 +78,10 @@ export function useChannelData() {
         );
       }
 
-      // Fire all stats requests to YouTube simultaneously!
+
       const statsResponses = await Promise.all(statsPromises);
 
-      // Combine the fast results back into your original array format
+      // combine in array format
       const allStats: any[] = [];
       for (const statsJson of statsResponses) {
         if (statsJson.items) {
