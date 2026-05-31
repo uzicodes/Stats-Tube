@@ -14,6 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Stats-Tube",
+  description: "Paste a YouTube URL, get instant data-driven intelligence. Track engagement rates and uncover momentum. No Logins Required.",
   icons: {
     icon: [
       { url: "/favicon/favicon.ico" },

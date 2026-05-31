@@ -7,6 +7,7 @@
   src: url("/fonts/rajdhani.semibold.woff2") format("woff2");
   font-weight: 700;
   font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
@@ -14,6 +15,7 @@
   src: url("/fonts/Black%20Kastile%20Modern.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
+  font-display: swap;
 }
 
 * {
@@ -145,4 +147,19 @@
   html {
     @apply font-sans;
   }
+}
+
+@keyframes gpuFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-gpu-fade-in {
+  animation: gpuFadeIn 0.7s ease-out forwards;
 }

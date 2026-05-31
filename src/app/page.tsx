@@ -2,10 +2,12 @@
 
 import { useState, useEffect, useRef } from "react";
 import { SearchInput } from "@/components/ui/SearchInput";
-import Galaxy from "@/components/Galaxy";
+import dynamic from "next/dynamic";
 import { useChannelData } from "@/hooks/useChannelData";
 import { Activity, Shield, TrendingUp, Bug, CheckCircle2 } from "lucide-react";
-import { Dashboard } from "@/app/dashboard";
+
+const Galaxy = dynamic(() => import("@/components/Galaxy"), { ssr: false });
+const Dashboard = dynamic(() => import("@/app/dashboard").then((mod) => mod.Dashboard), { ssr: false });
 import Footer from "@/app/footer";
 import GlobalLoader from "@/app/GlobalLoader";
 
@@ -162,7 +164,7 @@ export default function Home() {
 
         {/* LANDING PAGE */}
         {!showDashboard && !loading && !error && (
-          <div className="w-full max-w-4xl space-y-12 text-center animate-in fade-in duration-700">
+          <div className="w-full max-w-4xl space-y-12 text-center animate-gpu-fade-in">
             <div className="space-y-1 -mt-6">
               <h1 className="text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight" style={{ fontFamily: '"Black Kastile Modern", sans-serif', letterSpacing: '0.10em' }}>
                 STATS-TUBE
