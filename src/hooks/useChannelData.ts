@@ -30,7 +30,7 @@ export function useChannelData() {
         throw new Error("Could not find uploads playlist for this channel.");
       }
 
-      // 2. Fetch Playlist Items (Recent Videos) - with pagination
+      // 2. Fetch Playlist Items (Restored to your original 200 target!)
       let allVideoIds: string[] = [];
       let pageToken = '';
       let totalFetched = 0;
@@ -64,22 +64,29 @@ export function useChannelData() {
         return true;
       }
 
-      // 3. Fetch Batch Video Statistics (YouTube API limit is 50 IDs per request)
-      const allStats: any[] = [];
+      // 3. Fetch Batch Video Statistics (Concurrent fetch for maximum speed)
       const batchSize = 50;
+      const statsPromises = [];
 
+      // We queue up the requests instead of waiting for them one by one
       for (let i = 0; i < allVideoIds.length; i += batchSize) {
         const batch = allVideoIds.slice(i, i + batchSize);
         const batchIdString = batch.join(',');
-        
-        const statsRes = await fetch(`/api/youtube?action=stats&ids=${batchIdString}`);
-        const statsJson = await statsRes.json();
 
-        if (!statsRes.ok || !statsJson.items) {
-          throw new Error("Failed to fetch statistics for the videos.");
+        statsPromises.push(
+          fetch(`/api/youtube?action=stats&ids=${batchIdString}`).then(res => res.json())
+        );
+      }
+
+      // Fire all stats requests to YouTube simultaneously!
+      const statsResponses = await Promise.all(statsPromises);
+
+      // Combine the fast results back into your original array format
+      const allStats: any[] = [];
+      for (const statsJson of statsResponses) {
+        if (statsJson.items) {
+          allStats.push(...statsJson.items);
         }
-
-        allStats.push(...statsJson.items);
       }
 
       setVideosData(allStats);
