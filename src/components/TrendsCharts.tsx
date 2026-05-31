@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useEffect } from "react";
 import { 
-  AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell 
+  AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, LineChart, Line 
 } from "recharts";
 
 interface TrendsChartsProps {
@@ -59,6 +59,20 @@ export function TrendsCharts({ videosData }: TrendsChartsProps) {
           date: new Date(video.snippet?.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
         };
       }).reverse();
+  }, [videosData]);
+
+  // Process data for View Momentum chart (10 most recent, chronological)
+  const momentumData = useMemo(() => {
+    if (!videosData) return [];
+    
+    return videosData
+      .slice(0, 10)
+      .reverse()
+      .map((video, i) => ({
+        name: `Video -${9 - i}`,
+        views: parseInt(video.statistics?.viewCount) || 0,
+        title: video.snippet?.title || "Video",
+      }));
   }, [videosData]);
 
   // Process data for the Top Videos chart (sorted by views descending)
@@ -128,6 +142,21 @@ export function TrendsCharts({ videosData }: TrendsChartsProps) {
           <p className="text-zinc-100 font-medium text-sm line-clamp-2 mb-2">{payload[0].payload.title}</p>
           <p className="text-emerald-400 font-bold">
             {Intl.NumberFormat('en-US').format(payload[0].value)} Views
+          </p>
+        </div>
+      );
+    }
+    return null;
+  };
+
+  const CustomMomentumTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-zinc-900 border border-zinc-800 p-3 rounded-lg shadow-xl max-w-sm">
+          <p className="text-zinc-400 font-medium text-xs mb-1">{label}</p>
+          <p className="text-zinc-100 font-medium text-sm line-clamp-2 mb-2">{payload[0].payload.title}</p>
+          <p className="text-[#34d399] font-bold">
+            {formatYAxis(payload[0].value)} Views
           </p>
         </div>
       );
@@ -267,6 +296,41 @@ export function TrendsCharts({ videosData }: TrendsChartsProps) {
                 })}
               </Bar>
             </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      {/* VIEW MOMENTUM CHART */}
+      <div className="bg-zinc-900/40 border border-zinc-800 rounded-2xl p-6 flex flex-col lg:col-span-2">
+        <h3 className="text-xs font-bold tracking-widest text-[#F16AAD] uppercase mb-6 text-center">View Momentum</h3>
+        <div className="h-96 w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={momentumData} margin={{ top: 5, right: isMobile ? 10 : 30, left: isMobile ? 0 : 20, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#27272a" />
+              <XAxis 
+                dataKey="name" 
+                stroke="#52525b" 
+                tick={{ fontSize: 12, fill: '#a1a1aa' }} 
+                tickLine={false} 
+                axisLine={false} 
+              />
+              <YAxis 
+                tickFormatter={formatYAxis} 
+                stroke="#52525b" 
+                tick={{ fontSize: 12, fill: '#fbbf24' }} 
+                tickLine={false} 
+                axisLine={false} 
+              />
+              <Tooltip content={<CustomMomentumTooltip />} cursor={{ stroke: '#27272a', strokeWidth: 1 }} />
+              <Line 
+                type="monotone" 
+                dataKey="views" 
+                stroke="#34d399" 
+                strokeWidth={3} 
+                dot={{ r: 4, fill: "#34d399", strokeWidth: 0 }}
+                activeDot={{ r: 6, fill: "#10b981", strokeWidth: 0 }}
+              />
+            </LineChart>
           </ResponsiveContainer>
         </div>
       </div>
