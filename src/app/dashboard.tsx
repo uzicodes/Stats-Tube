@@ -26,8 +26,11 @@ export function Dashboard({ channelData, videosData, onBack }: DashboardProps) {
     <div className="w-full max-w-5xl mx-auto mt-4 space-y-6 text-left">
       <ChannelHeader channel={channelData} onBack={onBack} />
       
+      {/* Overview anchor — placed after the sticky header so it scrolls to the right spot */}
+      <div id="overview" className="scroll-mt-24" />
+
       {/* KPI Cards */}
-      <div id="overview" className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6 scroll-mt-24">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
         {videosData && videosData.length > 0 ? (
           <>
             {/* Usual Views Per Upload */}

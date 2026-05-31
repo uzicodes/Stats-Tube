@@ -14,49 +14,67 @@ export function ChannelHeader({ channel, onBack }: ChannelHeaderProps) {
   const snippet = channel.snippet;
   const stats = channel.statistics;
   const [activeTab, setActiveTab] = useState<string>("Overview");
-  const isUserNavigatingRef = useRef(false);
+  const isScrollingToRef = useRef<string | null>(null);
+  const scrollEndTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   
-  // Track scroll position to highlight active section
+  // ── Scroll-spy: determine which section is active based on scroll position ──
   useEffect(() => {
-    const handleScroll = () => {
-      // Skip scroll-based tab switching if user just clicked a button
-      if (isUserNavigatingRef.current) {
-        return;
+    const SECTIONS = [
+      { id: "overview", name: "Overview" },
+      { id: "trends",   name: "Trends" },
+      { id: "content",  name: "Content" },
+      { id: "compare",  name: "Compare" },
+    ];
+
+    const getActiveSection = (): string => {
+      const scrollY = window.scrollY;
+      const windowHeight = window.innerHeight;
+      const docHeight = document.documentElement.scrollHeight;
+
+      // ① At the bottom of the page → always activate the last section
+      if (scrollY + windowHeight >= docHeight - 100) {
+        return SECTIONS[SECTIONS.length - 1].name;
       }
-      const sections = [
-        { id: "overview", name: "Overview" },
-        { id: "trends", name: "Trends" },
-        { id: "content", name: "Content" },
-        { id: "compare", name: "Compare" }
-      ];
 
-      // Get all section elements
-      const sectionElements = sections.map(section => ({
-        ...section,
-        element: document.getElementById(section.id)
-      })).filter(s => s.element);
+      // ② At the very top → always Overview
+      if (scrollY < 10) {
+        return "Overview";
+      }
 
-      if (sectionElements.length === 0) return;
+      // ③ Walk forward through sections. Keep updating `active` for every
+      //    section whose top has scrolled past the trigger line. The last
+      //    one that qualifies is the deepest section currently in view.
+      //    Using absolute document coordinates (scrollY + rect.top) is
+      //    stable regardless of scroll timing or animation state.
+      const triggerLine = scrollY + 130; // 130px below the viewport top
+      let active = "Overview";
 
-      // Find which section is currently in view (top of viewport)
-      const viewportCenter = window.innerHeight / 2;
-      
-      for (const section of sectionElements) {
-        if (section.element) {
-          const rect = section.element.getBoundingClientRect();
-          // If section is in the upper half of viewport, consider it active
-          if (rect.top < viewportCenter && rect.bottom > 0) {
-            setActiveTab(section.name);
-            break;
-          }
+      for (const section of SECTIONS) {
+        const el = document.getElementById(section.id);
+        if (!el) continue;
+        // Absolute Y position of this section's top in the document
+        const sectionTop = el.getBoundingClientRect().top + scrollY;
+        if (sectionTop <= triggerLine) {
+          active = section.name;
+        } else {
+          break; // sections are in DOM order, no need to check further
         }
       }
+
+      return active;
     };
 
-    window.addEventListener("scroll", handleScroll);
+    const handleScroll = () => {
+      // While a button-click scroll is in progress, don't override the tab
+      if (isScrollingToRef.current) return;
+      setActiveTab(getActiveSection());
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll(); // set initial state
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-  
+
   // Format numbers (1,500,000 -> 1.5M)
   const formatCompact = (num: string | number) => {
     return Intl.NumberFormat('en-US', {
@@ -112,22 +130,41 @@ export function ChannelHeader({ channel, onBack }: ChannelHeaderProps) {
     }
   };
 
+  // ── Navigate to a section on button click ──
   const scrollToSection = (sectionId: string) => {
-    const capitalizedId = sectionId.charAt(0).toUpperCase() + sectionId.slice(1);
-    setActiveTab(capitalizedId);
-    
-    // Prevent scroll handler from interfering with the navigation
-    isUserNavigatingRef.current = true;
-    
-    const element = document.getElementById(sectionId.toLowerCase());
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth", block: "start" });
-      
-      // Re-enable scroll-based detection after scroll animation completes
-      setTimeout(() => {
-        isUserNavigatingRef.current = false;
-      }, 1000);
+    const name = sectionId.charAt(0).toUpperCase() + sectionId.slice(1);
+    setActiveTab(name);
+
+    // Lock the scroll-spy so it doesn't override the tab during smooth scroll
+    isScrollingToRef.current = name;
+
+    // Overview = scroll to page top; others = scroll to their section anchor
+    if (sectionId.toLowerCase() === "overview") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      const element = document.getElementById(sectionId.toLowerCase());
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
     }
+
+    // Detect when smooth scroll finishes: wait for 150ms of scroll silence.
+    // This is more reliable than a fixed timeout since smooth scroll
+    // duration varies across browsers and distances.
+    const unlockAfterIdle = () => {
+      if (scrollEndTimerRef.current) clearTimeout(scrollEndTimerRef.current);
+      scrollEndTimerRef.current = setTimeout(() => {
+        window.removeEventListener("scroll", unlockAfterIdle);
+        isScrollingToRef.current = null;
+      }, 150);
+    };
+    window.addEventListener("scroll", unlockAfterIdle, { passive: true });
+
+    // Hard fallback: unlock after 2s no matter what
+    setTimeout(() => {
+      window.removeEventListener("scroll", unlockAfterIdle);
+      isScrollingToRef.current = null;
+    }, 2000);
   };
 
   return (
