@@ -166,7 +166,7 @@ export default function Home() {
         {!showDashboard && !loading && !error && (
           <div className="w-full max-w-4xl space-y-12 text-center animate-gpu-fade-in">
             <div className="space-y-1 -mt-6">
-              <h1 className="text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight" style={{ fontFamily: '"Black Kastile Modern", sans-serif', letterSpacing: '0.10em' }}>
+              <h1 className="text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight" style={{ fontFamily: 'var(--font-black-kastile), sans-serif', letterSpacing: '0.10em' }}>
                 STATS-TUBE
               </h1>
             </div>
