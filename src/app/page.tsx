@@ -64,6 +64,7 @@ export default function Home() {
     if (isDashboardActive === "true" && savedType && savedValue && !channelData) {
       handleAnalyze(savedType as 'handle' | 'channelId', savedValue);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Mark initial page load as complete after component mounts

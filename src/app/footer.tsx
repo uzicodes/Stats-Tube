@@ -60,7 +60,7 @@ export default function Footer() {
           </a>
         </div>
         
-        <p className="text-blue-400 text-sm">© {new Date().getFullYear()} StatsTube</p>
+        <p className="text-blue-400 text-sm" suppressHydrationWarning>© {new Date().getFullYear()} StatsTube</p>
         
         <a 
           href="https://github.com/uzicodes/Stats-Tube" 

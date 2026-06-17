@@ -294,7 +294,7 @@ export function TrendsCharts({ videosData }: TrendsChartsProps) {
                     color = interpolateColor(c1, c2, t);
                   }
                   
-                  return <Cell key={`cell-${index}`} fill={color} />;
+                  return <Cell key={`cell-${entry.title || index}`} fill={color} />;
                 })}
               </Bar>
             </BarChart>
