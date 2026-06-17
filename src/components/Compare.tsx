@@ -14,6 +14,29 @@ interface CompareSectionProps {
   baseVideos: any[];
 }
 
+const formatCompact = (num: number) => {
+  if (num >= 1000000) return (num / 1000000).toFixed(1) + ' M';
+  if (num >= 1000) return (num / 1000).toFixed(1) + ' K';
+  return num.toString();
+};
+
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-zinc-900 border border-zinc-800 p-3 rounded-lg shadow-xl min-w-[150px]">
+        <p className="text-zinc-400 font-medium text-xs mb-2">{label}</p>
+        {payload.map((entry: any, index: number) => (
+          <div key={index} className="flex justify-between items-center gap-4 mb-1">
+            <span style={{ color: entry.color }} className="font-semibold text-sm line-clamp-1">{entry.name}</span>
+            <span className="text-zinc-100 font-bold text-sm">{formatCompact(Number(entry.value))}</span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+  return null;
+};
+
 export function CompareSection({ baseChannel, baseVideos }: CompareSectionProps) {
   const [searchInput, setSearchInput] = useState("");
 
@@ -32,11 +55,7 @@ export function CompareSection({ baseChannel, baseVideos }: CompareSectionProps)
     await fetchChannelData(type, formattedValue);
   };
 
-  const formatCompact = (num: number) => {
-    if (num >= 1000000) return (num / 1000000).toFixed(1) + ' M';
-    if (num >= 1000) return (num / 1000).toFixed(1) + ' K';
-    return num.toString();
-  };
+
 
   const formatCurrency = (num: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -168,22 +187,7 @@ export function CompareSection({ baseChannel, baseVideos }: CompareSectionProps)
     };
   });
 
-  const CustomTooltip = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="bg-zinc-900 border border-zinc-800 p-3 rounded-lg shadow-xl min-w-[150px]">
-          <p className="text-zinc-400 font-medium text-xs mb-2">{label}</p>
-          {payload.map((entry: any, index: number) => (
-            <div key={index} className="flex justify-between items-center gap-4 mb-1">
-              <span style={{ color: entry.color }} className="font-semibold text-sm line-clamp-1">{entry.name}</span>
-              <span className="text-zinc-100 font-bold text-sm">{formatCompact(Number(entry.value))}</span>
-            </div>
-          ))}
-        </div>
-      );
-    }
-    return null;
-  };
+
 
   return (
     <div className="w-full mt-12 animate-in fade-in duration-700">
