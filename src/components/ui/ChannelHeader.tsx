@@ -10,60 +10,48 @@ interface ChannelHeaderProps {
   onBack?: () => void;
 }
 
+const SECTIONS = [
+  { id: "overview", name: "Overview" },
+  { id: "trends",   name: "Trends" },
+  { id: "content",  name: "Content" },
+  { id: "compare",  name: "Compare" },
+];
+
+const getActiveSection = (): string => {
+  if (typeof window === "undefined") return "Overview";
+  const scrollY = window.scrollY;
+  const windowHeight = window.innerHeight;
+  const docHeight = document.documentElement.scrollHeight;
+
+  if (scrollY + windowHeight >= docHeight - 100) return SECTIONS[SECTIONS.length - 1].name;
+  if (scrollY < 10) return "Overview";
+
+  const triggerLine = scrollY + 130;
+  let active = "Overview";
+
+  for (const section of SECTIONS) {
+    const el = document.getElementById(section.id);
+    if (!el) continue;
+    const sectionTop = el.getBoundingClientRect().top + scrollY;
+    if (sectionTop <= triggerLine) {
+      active = section.name;
+    } else {
+      break;
+    }
+  }
+
+  return active;
+};
+
 export function ChannelHeader({ channel, onBack }: ChannelHeaderProps) {
   const snippet = channel.snippet;
   const stats = channel.statistics;
-  const [activeTab, setActiveTab] = useState<string>("Overview");
+  const [activeTab, setActiveTab] = useState<string>(() => getActiveSection());
   const isScrollingToRef = useRef<string | null>(null);
   const scrollEndTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   
   // ── Scroll-spy: determine which section is active based on scroll position ──
   useEffect(() => {
-    const SECTIONS = [
-      { id: "overview", name: "Overview" },
-      { id: "trends",   name: "Trends" },
-      { id: "content",  name: "Content" },
-      { id: "compare",  name: "Compare" },
-    ];
-
-    const getActiveSection = (): string => {
-      const scrollY = window.scrollY;
-      const windowHeight = window.innerHeight;
-      const docHeight = document.documentElement.scrollHeight;
-
-      // ① At the bottom of the page → always activate the last section
-      if (scrollY + windowHeight >= docHeight - 100) {
-        return SECTIONS[SECTIONS.length - 1].name;
-      }
-
-      // ② At the very top → always Overview
-      if (scrollY < 10) {
-        return "Overview";
-      }
-
-      // ③ Walk forward through sections. Keep updating `active` for every
-      //    section whose top has scrolled past the trigger line. The last
-      //    one that qualifies is the deepest section currently in view.
-      //    Using absolute document coordinates (scrollY + rect.top) is
-      //    stable regardless of scroll timing or animation state.
-      const triggerLine = scrollY + 130; // 130px below the viewport top
-      let active = "Overview";
-
-      for (const section of SECTIONS) {
-        const el = document.getElementById(section.id);
-        if (!el) continue;
-        // Absolute Y position of this section's top in the document
-        const sectionTop = el.getBoundingClientRect().top + scrollY;
-        if (sectionTop <= triggerLine) {
-          active = section.name;
-        } else {
-          break; // sections are in DOM order, no need to check further
-        }
-      }
-
-      return active;
-    };
-
     const handleScroll = () => {
       // While a button-click scroll is in progress, don't override the tab
       if (isScrollingToRef.current) return;
@@ -71,7 +59,6 @@ export function ChannelHeader({ channel, onBack }: ChannelHeaderProps) {
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll(); // set initial state
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -172,7 +159,7 @@ export function ChannelHeader({ channel, onBack }: ChannelHeaderProps) {
       {/* Top Navigation Row (Sticky) */}
       <div className="sticky top-0 z-50 pt-4 pb-4 mb-4 bg-zinc-950/95 backdrop-blur-xl transition-all flex items-center justify-between w-full">
         {/* Back Button */}
-        <button onClick={handleBackClick} className="inline-flex items-center gap-1 sm:gap-2 text-zinc-400 hover:text-green-400 transition-colors bg-none border-none cursor-pointer shrink-0 pr-2">
+        <button type="button" onClick={handleBackClick} className="inline-flex items-center gap-1 sm:gap-2 text-zinc-400 hover:text-green-400 transition-colors bg-none border-none cursor-pointer shrink-0 pr-2">
           <ArrowLeft className="w-4 h-4" />
           <span className="text-xs sm:text-sm hidden sm:inline">Back to Home</span>
           <span className="text-xs sm:hidden">Back</span>
@@ -181,6 +168,7 @@ export function ChannelHeader({ channel, onBack }: ChannelHeaderProps) {
         {/* Tab Buttons - Scaled for Mobile */}
         <div className="flex flex-nowrap sm:flex-wrap justify-end gap-1 sm:gap-3 items-center overflow-x-auto no-scrollbar">
           <button 
+            type="button"
             onClick={() => scrollToSection("overview")}
             className={`px-2 py-1 text-[11px] sm:px-3 sm:py-1.5 sm:text-sm border rounded-lg transition-colors whitespace-nowrap ${
               activeTab === "Overview" 
@@ -191,6 +179,7 @@ export function ChannelHeader({ channel, onBack }: ChannelHeaderProps) {
             Overview
           </button>
           <button 
+            type="button"
             onClick={() => scrollToSection("trends")}
             className={`px-2 py-1 text-[11px] sm:px-3 sm:py-1.5 sm:text-sm border rounded-lg transition-colors whitespace-nowrap ${
               activeTab === "Trends" 
@@ -201,6 +190,7 @@ export function ChannelHeader({ channel, onBack }: ChannelHeaderProps) {
             Trends
           </button>
           <button 
+            type="button"
             onClick={() => scrollToSection("content")}
             className={`px-2 py-1 text-[11px] sm:px-3 sm:py-1.5 sm:text-sm border rounded-lg transition-colors whitespace-nowrap ${
               activeTab === "Content" 
@@ -211,6 +201,7 @@ export function ChannelHeader({ channel, onBack }: ChannelHeaderProps) {
             Content
           </button>
           <button 
+            type="button"
             onClick={() => scrollToSection("compare")}
             className={`px-2 py-1 text-[11px] sm:px-3 sm:py-1.5 sm:text-sm border rounded-lg transition-colors whitespace-nowrap ${
               activeTab === "Compare" 

@@ -104,6 +104,7 @@ export function VideoGrid({ videosData }: VideoGridProps) {
           {/* Toggle Buttons */}
           <div className="inline-flex gap-0 bg-zinc-900/50 border border-zinc-800 rounded-lg p-1">
             <button
+              type="button"
               onClick={() => setFilterType('videos')}
               className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
                 filterType === 'videos'
@@ -114,6 +115,7 @@ export function VideoGrid({ videosData }: VideoGridProps) {
               Long Videos
             </button>
             <button
+              type="button"
               onClick={() => setFilterType('shorts')}
               className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
                 filterType === 'shorts'
@@ -166,6 +168,7 @@ export function VideoGrid({ videosData }: VideoGridProps) {
                   src={video.snippet?.thumbnails?.maxres?.url || video.snippet?.thumbnails?.high?.url} 
                   alt={video.snippet?.title}
                   fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   className="object-cover group-hover:scale-105 transition-transform duration-500"
                 />
                 <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent opacity-80" />
@@ -254,6 +257,7 @@ export function VideoGrid({ videosData }: VideoGridProps) {
         {displayLimit < filteredVideos.length && (
           <div className="flex items-center justify-center bg-zinc-950/40 border-2 border-dashed border-zinc-800 rounded-2xl overflow-hidden hover:border-emerald-500/50 transition-colors group">
             <button
+              type="button"
               onClick={() => setDisplayLimit(prev => Math.min(prev + 50, filteredVideos.length))}
               className="w-full h-full flex flex-col items-center justify-center py-8 px-4 gap-3"
             >

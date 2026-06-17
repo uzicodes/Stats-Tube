@@ -194,6 +194,7 @@ export function CompareSection({ baseChannel, baseVideos }: CompareSectionProps)
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-xl font-bold text-zinc-100 uppercase tracking-wider">Head to Head</h2>
         <button
+          type="button"
           onClick={() => window.location.reload()}
           className="text-xs text-zinc-400 hover:text-white flex items-center gap-1 transition-colors"
         >

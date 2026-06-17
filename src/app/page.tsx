@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useReducer } from "react";
+import Image from "next/image";
 import { SearchInput } from "@/components/ui/SearchInput";
 import dynamic from "next/dynamic";
 import { useChannelData } from "@/hooks/useChannelData";
@@ -17,10 +18,10 @@ export default function Home() {
   const [initialLoadComplete, setInitialLoadComplete] = useState(false);
 
   // Bug Report Form States
-  const [bugEmail, setBugEmail] = useState("");
-  const [bugDetails, setBugDetails] = useState("");
-  const [isSubmittingBug, setIsSubmittingBug] = useState(false);
-  const [bugSuccess, setBugSuccess] = useState(false);
+  const [bugState, setBugState] = useReducer(
+    (state: any, action: any) => ({ ...state, ...action }),
+    { email: "", details: "", isSubmitting: false, success: false }
+  );
 
   const handleAnalyze = async (type: 'handle' | 'channelId', value: string) => {
     // Save current session to browser storage
@@ -79,8 +80,8 @@ export default function Home() {
 
   const handleBugSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!bugDetails.trim()) return;
-    setIsSubmittingBug(true);
+    if (!bugState.details.trim()) return;
+    setBugState({ isSubmitting: true });
 
     try {
       const response = await fetch("https://api.web3forms.com/submit", {
@@ -93,18 +94,16 @@ export default function Home() {
           access_key: "25e65c88-7b8e-4e47-95f0-c289b90213e5",
           subject: "🚨 New Bug Report - Stats-Tube",
           from_name: "Stats-Tube Bug Tracker",
-          email: bugEmail || "No email provided",
-          message: bugDetails,
+          email: bugState.email || "No email provided",
+          message: bugState.details,
         }),
       });
 
       const result = await response.json();
 
       if (result.success) {
-        setBugSuccess(true);
-        setBugEmail("");
-        setBugDetails("");
-        setTimeout(() => setBugSuccess(false), 3000);
+        setBugState({ success: true, email: "", details: "" });
+        setTimeout(() => setBugState({ success: false }), 3000);
       } else {
         console.error("Submission failed", result);
         alert("Failed to send report. Please try again.");
@@ -113,7 +112,7 @@ export default function Home() {
       console.error("Error sending bug report:", error);
       alert("An error occurred while sending the report.");
     } finally {
-      setIsSubmittingBug(false);
+      setBugState({ isSubmitting: false });
     }
   };
 
@@ -133,7 +132,7 @@ export default function Home() {
           <div className="max-w-2xl w-full">
             {/* Logo */}
             <div className="flex justify-center mb-1">
-              <img src="/logo2.png" alt="Stats-Tube Logo" className="h-20 w-auto object-contain" />
+              <Image src="/logo2.png" alt="Stats-Tube Logo" width={300} height={80} className="h-20 w-auto object-contain" priority />
             </div>
           </div>
         </header>
@@ -152,6 +151,7 @@ export default function Home() {
             </div>
             <div className="flex justify-center">
               <button
+                type="button"
                 onClick={handleBackToHome}
                 className="px-6 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium text-sm transition-colors"
               >
@@ -220,14 +220,14 @@ export default function Home() {
                     <h3 className="font-semibold text-green-400 text-xl">Spotted a bug ?</h3>
                   </div>
                 </div>
-                {bugSuccess ? (
+                {bugState.success ? (
                   <div className="py-8 text-center text-green-400"><CheckCircle2 className="w-12 h-12 mx-auto mb-3" /><p>Submitted successfully!</p></div>
                 ) : (
                   <form onSubmit={handleBugSubmit} className="space-y-4">
-                    <input type="email" value={bugEmail} onChange={(e) => setBugEmail(e.target.value)} placeholder="Email" className="w-full bg-zinc-950/50 border border-zinc-800 rounded-xl px-4 py-3 text-sm" />
-                    <textarea value={bugDetails} onChange={(e) => setBugDetails(e.target.value)} placeholder="Bug details..." required rows={3} className="w-full bg-zinc-950/50 border border-zinc-800 rounded-xl px-4 py-3 text-sm resize-none" />
-                    <button type="submit" disabled={isSubmittingBug} className="px-6 py-3 bg-zinc-100 text-zinc-900 rounded-xl font-medium text-sm">
-                      {isSubmittingBug ? "Submitting..." : "Submit Report"}
+                    <input type="email" value={bugState.email} onChange={(e) => setBugState({ email: e.target.value })} placeholder="Email" className="w-full bg-zinc-950/50 border border-zinc-800 rounded-xl px-4 py-3 text-sm" />
+                    <textarea value={bugState.details} onChange={(e) => setBugState({ details: e.target.value })} placeholder="Bug details..." required rows={3} className="w-full bg-zinc-950/50 border border-zinc-800 rounded-xl px-4 py-3 text-sm resize-none" />
+                    <button type="submit" disabled={bugState.isSubmitting} className="px-6 py-3 bg-zinc-100 text-zinc-900 rounded-xl font-medium text-sm">
+                      {bugState.isSubmitting ? "Submitting..." : "Submit Report"}
                     </button>
                   </form>
                 )}
