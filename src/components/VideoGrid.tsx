@@ -8,21 +8,60 @@ interface VideoGridProps {
   videosData: any[];
 }
 
+// Helper: Convert duration string to seconds
+const durationToSeconds = (duration: string): number => {
+  const match = duration.match(/PT(\d+H)?(\d+M)?(\d+S)?/);
+  if (!match) return 0;
+  const h = match[1] ? parseInt(match[1]) : 0;
+  const m = match[2] ? parseInt(match[2]) : 0;
+  const s = match[3] ? parseInt(match[3]) : 0;
+  return h * 3600 + m * 60 + s;
+};
+
+// Helper: Format large numbers (498000000 -> 498.0M)
+const formatViews = (num: number) => {
+  if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+  if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+  return num.toString();
+};
+
+// Helper: Format YouTube Duration (PT22M38S -> 22:38)
+const parseDuration = (duration: string) => {
+  const match = duration.match(/PT(\d+H)?(\d+M)?(\d+S)?/);
+  if (!match) return "0:00";
+  const h = match[1] ? parseInt(match[1]) : 0;
+  const m = match[2] ? parseInt(match[2]) : 0;
+  const s = match[3] ? parseInt(match[3]) : 0;
+  if (h > 0) return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  return `${m}:${s.toString().padStart(2, '0')}`;
+};
+
+// Helper: Format "Time Ago" (e.g., 2 years ago)
+const timeAgo = (dateString: string) => {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+  const intervals = [
+    { label: 'year', seconds: 31536000 },
+    { label: 'month', seconds: 2592000 },
+    { label: 'day', seconds: 86400 },
+    { label: 'hour', seconds: 3600 },
+    { label: 'minute', seconds: 60 }
+  ];
+  for (const interval of intervals) {
+    const count = Math.floor(diffInSeconds / interval.seconds);
+    if (count >= 1) return `${count} ${interval.label}${count !== 1 ? 's' : ''} ago`;
+  }
+  return 'Just now';
+};
+
 export function VideoGrid({ videosData }: VideoGridProps) {
   const [filterType, setFilterType] = useState<'videos' | 'shorts'>('videos');
   const [sortBy, setSortBy] = useState<'views' | 'engagement' | 'date' | 'earnings'>('date');
   const [displayLimit, setDisplayLimit] = useState(50);
   if (!videosData || videosData.length === 0) return null;
 
-  // Helper: Convert duration string to seconds
-  const durationToSeconds = (duration: string): number => {
-    const match = duration.match(/PT(\d+H)?(\d+M)?(\d+S)?/);
-    if (!match) return 0;
-    const h = match[1] ? parseInt(match[1]) : 0;
-    const m = match[2] ? parseInt(match[2]) : 0;
-    const s = match[3] ? parseInt(match[3]) : 0;
-    return h * 3600 + m * 60 + s;
-  };
+
 
   // Separate shorts and videos (shorts are under 60 seconds)
   const shorts = videosData.filter(v => durationToSeconds(v.contentDetails?.duration || 'PT0S') < 60).slice(0, 100);
@@ -59,42 +98,7 @@ export function VideoGrid({ videosData }: VideoGridProps) {
     ? displayedVideos.reduce((sum, v) => sum + (parseInt(v.statistics?.viewCount) || 0), 0) / displayedVideos.length
     : 0;
 
-  // Helper: Format large numbers (498000000 -> 498.0M)
-  const formatViews = (num: number) => {
-    if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
-    if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
-    return num.toString();
-  };
 
-  // Helper: Format YouTube Duration (PT22M38S -> 22:38)
-  const parseDuration = (duration: string) => {
-    const match = duration.match(/PT(\d+H)?(\d+M)?(\d+S)?/);
-    if (!match) return "0:00";
-    const h = match[1] ? parseInt(match[1]) : 0;
-    const m = match[2] ? parseInt(match[2]) : 0;
-    const s = match[3] ? parseInt(match[3]) : 0;
-    if (h > 0) return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-    return `${m}:${s.toString().padStart(2, '0')}`;
-  };
-
-  // Helper: Format "Time Ago" (e.g., 2 years ago)
-  const timeAgo = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-    const intervals = [
-      { label: 'year', seconds: 31536000 },
-      { label: 'month', seconds: 2592000 },
-      { label: 'day', seconds: 86400 },
-      { label: 'hour', seconds: 3600 },
-      { label: 'minute', seconds: 60 }
-    ];
-    for (const interval of intervals) {
-      const count = Math.floor(diffInSeconds / interval.seconds);
-      if (count >= 1) return `${count} ${interval.label}${count !== 1 ? 's' : ''} ago`;
-    }
-    return 'Just now';
-  };
 
   return (
     <div className="w-full mt-8 animate-in slide-in-from-bottom-10 duration-700 delay-300">

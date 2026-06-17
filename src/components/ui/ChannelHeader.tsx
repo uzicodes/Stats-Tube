@@ -43,6 +43,55 @@ const getActiveSection = (): string => {
   return active;
 };
 
+// Format numbers (1,500,000 -> 1.5M)
+const formatCompact = (num: string | number) => {
+  return Intl.NumberFormat('en-US', {
+    notation: "compact",
+    maximumFractionDigits: 1
+  }).format(Number(num));
+};
+
+// channel creation date (month, year)
+const getChannelCreatedDate = (publishedAt: string) => {
+  const date = new Date(publishedAt);
+  return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+};
+
+// Calculate milestone & progress
+const getMilestoneData = (subs: number) => {
+  let nextMilestone = 1000;
+  if (subs >= 100000000) nextMilestone = Math.ceil(subs / 10000000) * 10000000; // 10M increments
+  else if (subs >= 10000000) nextMilestone = Math.ceil(subs / 1000000) * 1000000; // 1M increments
+  else if (subs >= 1000000) nextMilestone = Math.ceil(subs / 500000) * 500000; // 500K increments
+  else if (subs >= 100000) nextMilestone = Math.ceil(subs / 100000) * 100000; // 100K increments
+  else if (subs >= 10000) nextMilestone = Math.ceil(subs / 10000) * 10000; // 10K increments
+  
+  const prevMilestone = nextMilestone > 100000000 ? nextMilestone - 10000000 : 
+                        nextMilestone > 10000000 ? nextMilestone - 1000000 : 
+                        nextMilestone > 1000000 ? nextMilestone - 500000 : 
+                        nextMilestone > 100000 ? nextMilestone - 100000 : 0;
+                        
+  const progress = Math.min(100, Math.max(0, ((subs - prevMilestone) / (nextMilestone - prevMilestone)) * 100));
+  
+  return { nextMilestone, progress };
+};
+
+// Determine Creator Tier
+const getCreatorTier = (subs: number) => {
+  if (subs >= 50000000) return { label: "Elite Creator", color: "text-rose-400 border-rose-500/30 bg-rose-500/10" };
+  if (subs >= 10000000) return { label: "Diamond Tier", color: "text-cyan-400 border-cyan-500/30 bg-cyan-500/10" };
+  if (subs >= 1000000) return { label: "Gold Tier", color: "text-yellow-400 border-yellow-500/30 bg-yellow-500/10" };
+  if (subs >= 100000) return { label: "Silver Tier", color: "text-zinc-300 border-zinc-500/30 bg-zinc-500/10" };
+  return { label: "Emerging", color: "text-emerald-400 border-emerald-500/30 bg-emerald-500/10" };
+};
+
+const getFlagEmoji = (countryCode: string) => {
+  if (!countryCode || countryCode.length !== 2) return countryCode;
+  return countryCode
+    .toUpperCase()
+    .replace(/./g, (char) => String.fromCodePoint(char.charCodeAt(0) + 127397));
+};
+
 export function ChannelHeader({ channel, onBack }: ChannelHeaderProps) {
   const snippet = channel.snippet;
   const stats = channel.statistics;
@@ -62,54 +111,7 @@ export function ChannelHeader({ channel, onBack }: ChannelHeaderProps) {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Format numbers (1,500,000 -> 1.5M)
-  const formatCompact = (num: string | number) => {
-    return Intl.NumberFormat('en-US', {
-      notation: "compact",
-      maximumFractionDigits: 1
-    }).format(Number(num));
-  };
 
-  // channel creation date (month, year)
-  const getChannelCreatedDate = () => {
-    const date = new Date(snippet.publishedAt);
-    return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
-  };
-
-  // Calculate milestone & progress
-  const getMilestoneData = (subs: number) => {
-    let nextMilestone = 1000;
-    if (subs >= 100000000) nextMilestone = Math.ceil(subs / 10000000) * 10000000; // 10M increments
-    else if (subs >= 10000000) nextMilestone = Math.ceil(subs / 1000000) * 1000000; // 1M increments
-    else if (subs >= 1000000) nextMilestone = Math.ceil(subs / 500000) * 500000; // 500K increments
-    else if (subs >= 100000) nextMilestone = Math.ceil(subs / 100000) * 100000; // 100K increments
-    else if (subs >= 10000) nextMilestone = Math.ceil(subs / 10000) * 10000; // 10K increments
-    
-    const prevMilestone = nextMilestone > 100000000 ? nextMilestone - 10000000 : 
-                          nextMilestone > 10000000 ? nextMilestone - 1000000 : 
-                          nextMilestone > 1000000 ? nextMilestone - 500000 : 
-                          nextMilestone > 100000 ? nextMilestone - 100000 : 0;
-                          
-    const progress = Math.min(100, Math.max(0, ((subs - prevMilestone) / (nextMilestone - prevMilestone)) * 100));
-    
-    return { nextMilestone, progress };
-  };
-
-  // Determine Creator Tier
-  const getCreatorTier = (subs: number) => {
-    if (subs >= 50000000) return { label: "Elite Creator", color: "text-rose-400 border-rose-500/30 bg-rose-500/10" };
-    if (subs >= 10000000) return { label: "Diamond Tier", color: "text-cyan-400 border-cyan-500/30 bg-cyan-500/10" };
-    if (subs >= 1000000) return { label: "Gold Tier", color: "text-yellow-400 border-yellow-500/30 bg-yellow-500/10" };
-    if (subs >= 100000) return { label: "Silver Tier", color: "text-zinc-300 border-zinc-500/30 bg-zinc-500/10" };
-    return { label: "Emerging", color: "text-emerald-400 border-emerald-500/30 bg-emerald-500/10" };
-  };
-
-  const getFlagEmoji = (countryCode: string) => {
-    if (!countryCode || countryCode.length !== 2) return countryCode;
-    return countryCode
-      .toUpperCase()
-      .replace(/./g, (char) => String.fromCodePoint(char.charCodeAt(0) + 127397));
-  };
 
   const handleBackClick = () => {
     if (onBack) {
@@ -277,7 +279,7 @@ export function ChannelHeader({ channel, onBack }: ChannelHeaderProps) {
             {/* Channel Created */}
             <div className="flex flex-col items-center sm:items-start">
               <span className="text-[10px] uppercase tracking-wider font-semibold text-zinc-500">Established</span>
-              <span className="text-sm font-medium text-zinc-200">{getChannelCreatedDate()}</span>
+              <span className="text-sm font-medium text-zinc-200">{getChannelCreatedDate(snippet.publishedAt)}</span>
             </div>
 
             {/* Country */}
