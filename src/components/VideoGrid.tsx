@@ -30,7 +30,7 @@ export function VideoGrid({ videosData }: VideoGridProps) {
   let filteredVideos = filterType === 'videos' ? longVideos : shorts;
 
   // Apply sorting based on sortBy state
-  filteredVideos = [...filteredVideos].sort((a, b) => {
+  filteredVideos = filteredVideos.toSorted((a, b) => {
     switch (sortBy) {
       case 'views':
         return (parseInt(b.statistics?.viewCount) || 0) - (parseInt(a.statistics?.viewCount) || 0);

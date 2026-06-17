@@ -35,6 +35,8 @@ export function useChannelData() {
       let pageToken = '';
       let totalFetched = 0;
       const targetVideos = 200;
+      
+      const statsPromises: Promise<any>[] = [];
 
       while (totalFetched < targetVideos) {
         const url = `/api/youtube?action=videos&playlistId=${uploadsPlaylistId}&maxResults=50${pageToken ? `&pageToken=${pageToken}` : ''}`;
@@ -48,6 +50,15 @@ export function useChannelData() {
         const videoIds = playlistJson.items.map((item: any) => item.contentDetails.videoId);
         allVideoIds = [...allVideoIds, ...videoIds];
         totalFetched += videoIds.length;
+
+        // Pipeline stats fetching concurrently rather than waiting sequentially
+        // for all pagination to finish. (Promise.all is used below)
+        if (videoIds.length > 0) {
+          const batchIdString = videoIds.join(',');
+          statsPromises.push(
+            fetch(`/api/youtube?action=stats&ids=${batchIdString}`).then(res => res.json())
+          );
+        }
 
         // If no nextPageToken? end
         if (!playlistJson.nextPageToken) {
@@ -63,21 +74,6 @@ export function useChannelData() {
         setLoading(false);
         return true;
       }
-
-      // Fetch Batch Video Statistics 
-      const batchSize = 50;
-      const statsPromises = [];
-
-      // queue up requests 
-      for (let i = 0; i < allVideoIds.length; i += batchSize) {
-        const batch = allVideoIds.slice(i, i + batchSize);
-        const batchIdString = batch.join(',');
-
-        statsPromises.push(
-          fetch(`/api/youtube?action=stats&ids=${batchIdString}`).then(res => res.json())
-        );
-      }
-
 
       const statsResponses = await Promise.all(statsPromises);
 
