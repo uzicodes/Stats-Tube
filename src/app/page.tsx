@@ -7,7 +7,7 @@ import dynamic from "next/dynamic";
 import { useChannelData } from "@/hooks/useChannelData";
 import { Activity, Shield, TrendingUp, Bug, CheckCircle2 } from "lucide-react";
 
-const Galaxy = dynamic(() => import("@/components/Galaxy"), { ssr: false });
+const StarBurst = dynamic(() => import("@/components/StarBurst"), { ssr: false });
 const Dashboard = dynamic(() => import("@/app/dashboard").then((mod) => mod.Dashboard), { ssr: false });
 import Footer from "@/app/footer";
 import GlobalLoader from "@/app/GlobalLoader";
@@ -121,7 +121,7 @@ export default function Home() {
       {/* Backgrounds */}
       {!showDashboard && (
         <div className="absolute inset-0 pointer-events-none z-0">
-          <Galaxy className="absolute inset-0" starSpeed={0.5} density={1} hueShift={140} speed={1} glowIntensity={0.3} saturation={0} mouseRepulsion repulsionStrength={2} twinkleIntensity={0.3} rotationSpeed={0.1} transparent />
+          <StarBurst className="absolute inset-0" starCount={249} color="#AAB4F0" starSize={40} />
         </div>
       )}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-size-[14px_24px] mask-[radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none"></div>
