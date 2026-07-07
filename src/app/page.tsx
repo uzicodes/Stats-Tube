@@ -182,7 +182,7 @@ export default function Home() {
             </div>
 
             <div className="space-y-4">
-              <h2 className="text-4xl text-transparent bg-clip-text bg-linear-to-r from-zinc-200 to-zinc-600" style={{ letterSpacing: 'normal', fontFamily: 'system-ui, sans-serif' }}>
+              <h2 className="text-4xl text-transparent bg-clip-text bg-linear-to-r from-zinc-200 to-zinc-600" style={{ letterSpacing: 'normal', fontFamily: 'var(--font-rajdhani), sans-serif' }}>
                 Uncover True Performance !
               </h2>
               <p className="max-w-4xl mx-auto text-sm sm:text-base text-zinc-400">
