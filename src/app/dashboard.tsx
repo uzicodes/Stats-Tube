@@ -12,16 +12,16 @@ interface DashboardProps {
   onBack?: () => void;
 }
 
-export function Dashboard({ channelData, videosData, onBack }: DashboardProps) {
-  const formatNumber = (num: number): string => {
-    if (num >= 1000000) {
-      return (num / 1000000).toFixed(1) + 'M';
-    } else if (num >= 1000) {
-      return (num / 1000).toFixed(1) + 'K';
-    }
-    return num.toString();
-  };
+function formatNumber(num: number): string {
+  if (num >= 1000000) {
+    return (num / 1000000).toFixed(1) + 'M';
+  } else if (num >= 1000) {
+    return (num / 1000).toFixed(1) + 'K';
+  }
+  return num.toString();
+}
 
+export function Dashboard({ channelData, videosData, onBack }: DashboardProps) {
   return (
     <div className="w-full max-w-5xl mx-auto mt-4 space-y-6 text-left">
       <ChannelHeader channel={channelData} onBack={onBack} />

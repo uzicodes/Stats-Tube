@@ -11,6 +11,28 @@ const RenderTarget = {
     preview: "preview",
 };
 
+function parseColor(input: string): [number, number, number] {
+    if (!input) return [255, 255, 255];
+    const s = input.trim();
+    if (s.startsWith("#")) {
+        let hex = s.slice(1);
+        if (hex.length === 3) {
+            hex = hex
+                .split("")
+                .map((c) => c + c)
+                .join("");
+        }
+        const num = parseInt(hex, 16);
+        return [(num >> 16) & 255, (num >> 8) & 255, num & 255];
+    }
+    const m = s.match(/rgba?\(([^)]+)\)/i);
+    if (m) {
+        const parts = m[1].split(",").map((p) => parseFloat(p.trim()));
+        return [parts[0] || 0, parts[1] || 0, parts[2] || 0];
+    }
+    return [255, 255, 255];
+}
+
 export default function StarBurst(inputProps: Props) {
     const props = { ...COMPONENT_DEFAULTS, ...inputProps };
     const {
@@ -35,28 +57,6 @@ export default function StarBurst(inputProps: Props) {
     const isStatic =
         renderTarget === RenderTarget.export ||
         renderTarget === RenderTarget.thumbnail;
-
-    const parseColor = (input: string): [number, number, number] => {
-        if (!input) return [255, 255, 255];
-        const s = input.trim();
-        if (s.startsWith("#")) {
-            let hex = s.slice(1);
-            if (hex.length === 3) {
-                hex = hex
-                    .split("")
-                    .map((c) => c + c)
-                    .join("");
-            }
-            const num = parseInt(hex, 16);
-            return [(num >> 16) & 255, (num >> 8) & 255, num & 255];
-        }
-        const m = s.match(/rgba?\(([^)]+)\)/i);
-        if (m) {
-            const parts = m[1].split(",").map((p) => parseFloat(p.trim()));
-            return [parts[0] || 0, parts[1] || 0, parts[2] || 0];
-        }
-        return [255, 255, 255];
-    };
 
     useEffect(() => {
         const container = containerRef.current;
