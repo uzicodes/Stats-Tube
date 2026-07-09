@@ -38,6 +38,16 @@ const calculateUploadVelocity = (videos: any[]) => {
   return Math.max(0.1, diffDays / videos.length);
 };
 
+const currencyFormatter = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  maximumFractionDigits: 0
+});
+
+const formatCurrency = (num: number) => {
+  return currencyFormatter.format(num);
+};
+
 export function CompareSection({ baseChannel, baseVideos }: CompareSectionProps) {
   const [searchInput, setSearchInput] = useState("");
 
@@ -54,16 +64,6 @@ export function CompareSection({ baseChannel, baseVideos }: CompareSectionProps)
     }
 
     await fetchChannelData(type, formattedValue);
-  };
-
-  const currencyFormatter = new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    maximumFractionDigits: 0
-  });
-
-  const formatCurrency = (num: number) => {
-    return currencyFormatter.format(num);
   };
 
 
