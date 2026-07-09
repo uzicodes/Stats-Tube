@@ -4,8 +4,17 @@ import { useState } from "react";
 import { Search, X, Swords, Sparkles } from "lucide-react";
 import { useChannelData } from "@/hooks/useChannelData";
 import { CompareStatsTable } from "./CompareStatsTable";
-import { CompareReachChart } from "./CompareReachChart";
-import { CompareMomentumChart } from "./CompareMomentumChart";
+import dynamic from "next/dynamic";
+
+const CompareReachChart = dynamic(
+  () => import("./CompareReachChart").then((mod) => mod.CompareReachChart),
+  { ssr: false }
+);
+
+const CompareMomentumChart = dynamic(
+  () => import("./CompareMomentumChart").then((mod) => mod.CompareMomentumChart),
+  { ssr: false }
+);
 
 interface CompareSectionProps {
   baseChannel: any;

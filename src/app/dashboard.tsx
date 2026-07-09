@@ -1,9 +1,14 @@
 "use client";
 
 import { ChannelHeader } from "@/components/ui/ChannelHeader";
-import { TrendsCharts } from "@/components/TrendsCharts";
 import { VideoGrid } from "@/components/VideoGrid";
 import { CompareSection } from "@/components/Compare";
+import dynamic from "next/dynamic";
+
+const TrendsCharts = dynamic(
+  () => import("@/components/TrendsCharts").then((mod) => mod.TrendsCharts),
+  { ssr: false }
+);
 import { Info } from "lucide-react";
 
 interface DashboardProps {
