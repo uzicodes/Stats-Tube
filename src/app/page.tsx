@@ -224,8 +224,8 @@ export default function Home() {
                   <div className="py-8 text-center text-green-400"><CheckCircle2 className="w-12 h-12 mx-auto mb-3" /><p>Submitted successfully!</p></div>
                 ) : (
                   <form onSubmit={handleBugSubmit} className="space-y-4">
-                    <input type="email" value={bugState.email} onChange={(e) => setBugState({ email: e.target.value })} placeholder="Email" className="w-full bg-zinc-950/50 border border-zinc-800 rounded-xl px-4 py-3 text-sm" />
-                    <textarea value={bugState.details} onChange={(e) => setBugState({ details: e.target.value })} placeholder="Bug details..." required rows={3} className="w-full bg-zinc-950/50 border border-zinc-800 rounded-xl px-4 py-3 text-sm resize-none" />
+                    <input type="email" value={bugState.email} onChange={(e) => setBugState({ email: e.target.value })} placeholder="Email" aria-label="Email address" className="w-full bg-zinc-950/50 border border-zinc-800 rounded-xl px-4 py-3 text-sm" />
+                    <textarea value={bugState.details} onChange={(e) => setBugState({ details: e.target.value })} placeholder="Bug details..." aria-label="Bug details" required rows={3} className="w-full bg-zinc-950/50 border border-zinc-800 rounded-xl px-4 py-3 text-sm resize-none" />
                     <button type="submit" disabled={bugState.isSubmitting} className="px-6 py-3 bg-zinc-100 text-zinc-900 rounded-xl font-medium text-sm">
                       {bugState.isSubmitting ? "Submitting..." : "Submit Report"}
                     </button>
