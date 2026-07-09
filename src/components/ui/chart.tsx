@@ -120,9 +120,29 @@ ${colorConfig
 
 const ChartTooltip = Tooltip
 
-function ChartTooltipContent({
-  active,
-  payload,
+function ChartTooltipContent(props: React.ComponentProps<typeof RechartsPrimitive.Tooltip> &
+  React.ComponentProps<"div"> & {
+    hideLabel?: boolean
+    hideIndicator?: boolean
+    indicator?: "line" | "dot" | "dashed"
+    nameKey?: string
+    labelKey?: string
+  } & Omit<
+    RechartsPrimitive.DefaultTooltipContentProps<
+      TooltipValueType,
+      TooltipNameType
+    >,
+    "accessibilityLayer"
+  >) {
+  if (!props.active || !props.payload?.length) {
+    return null
+  }
+
+  return <ChartTooltipContentBody {...props} />
+}
+
+const ChartTooltipContentBody = React.memo(function ChartTooltipContentBody({
+  payload = [],
   className,
   indicator = "dot",
   hideLabel = false,
@@ -151,7 +171,7 @@ function ChartTooltipContent({
   const { config } = useChart()
 
   const tooltipLabel = React.useMemo(() => {
-    if (hideLabel || !payload?.length) {
+    if (hideLabel || !payload.length) {
       return null
     }
 
@@ -185,10 +205,6 @@ function ChartTooltipContent({
     config,
     labelKey,
   ])
-
-  if (!active || !payload?.length) {
-    return null
-  }
 
   const nestLabel = payload.length === 1 && indicator !== "dot"
 
@@ -273,7 +289,7 @@ function ChartTooltipContent({
       </div>
     </div>
   )
-}
+})
 
 const ChartLegend = Legend
 
