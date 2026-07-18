@@ -55,7 +55,6 @@ export default function Home() {
   useEffect(() => {
     // Prevent double-fetching in React Strict Mode
     if (hasRestored.current) return;
-    hasRestored.current = true;
 
     const savedType = sessionStorage.getItem("st_searchType");
     const savedValue = sessionStorage.getItem("st_searchValue");
@@ -63,10 +62,13 @@ export default function Home() {
 
     // If they were on the dashboard before refreshing, automatically re-analyze!
     if (isDashboardActive === "true" && savedType && savedValue && !channelData) {
+      hasRestored.current = true;
       handleAnalyze(savedType as 'handle' | 'channelId', savedValue);
+    } else {
+      // Mark as restored even if we didn't fetch, so it doesn't try again
+      hasRestored.current = true;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [channelData, handleAnalyze]); // Properly declared dependencies
 
   // Mark initial page load as complete after component mounts
   useEffect(() => {
@@ -124,7 +126,7 @@ export default function Home() {
           <StarBurst className="absolute inset-0" starCount={249} color="#AAB4F0" starSize={40} />
         </div>
       )}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-size-[14px_24px] mask-[radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none"></div>
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:14px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none"></div>
 
       {/* Top Navigation */}
       {!showDashboard && (
@@ -161,8 +163,6 @@ export default function Home() {
           </div>
         )}
 
-
-
         {/* LANDING PAGE */}
         {!showDashboard && !loading && !error && (
           <div className="w-full max-w-4xl space-y-12 text-center animate-gpu-fade-in">
@@ -182,7 +182,7 @@ export default function Home() {
             </div>
 
             <div className="space-y-4">
-              <h2 className="text-4xl text-transparent bg-clip-text bg-linear-to-r from-zinc-200 to-zinc-600" style={{ letterSpacing: 'normal', fontFamily: 'var(--font-rajdhani), sans-serif' }}>
+              <h2 className="text-4xl text-transparent bg-clip-text bg-gradient-to-r from-zinc-200 to-zinc-600" style={{ letterSpacing: 'normal', fontFamily: 'var(--font-rajdhani), sans-serif' }}>
                 Uncover True Performance !
               </h2>
               <p className="max-w-4xl mx-auto text-sm sm:text-base text-zinc-400">
@@ -235,8 +235,6 @@ export default function Home() {
             </div>
           </div>
         )}
-
-
 
         {/* DASHBOARD */}
         {showDashboard && channelData && videosData && !loading && (
