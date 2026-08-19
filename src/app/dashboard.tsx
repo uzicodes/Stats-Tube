@@ -11,6 +11,7 @@ const TrendsCharts = dynamic(
 );
 import { ViewMetricNotice } from "@/components/ViewMetricNotice";
 import { calculateEstimatedRevenue, calculateEngagementRate } from "@/utils/analyticsCalculations";
+import { calculateNormalizedHitRate } from "@/utils/hitRateNormalization";
 import { Info } from "lucide-react";
 
 interface DashboardProps {
@@ -219,9 +220,15 @@ export function Dashboard({ channelData, videosData, onBack }: DashboardProps) {
               </div>
               <p className="text-2xl font-bold text-green-400">
                 {(() => {
-                  const avg = videosData.reduce((sum: number, v: any) => sum + (parseInt(v.statistics?.viewCount) || 0), 0) / videosData.length;
-                  const hits = videosData.filter((v: any) => (parseInt(v.statistics?.viewCount) || 0) > avg).length;
-                  return ((hits / videosData.length) * 100).toFixed(1) + "%";
+                  const avg = videosData.reduce((sum: number, v: any) => sum + (parseInt(v.statistics?.viewCount) || 0), 0) / (videosData.length || 1);
+                  const hits = videosData.filter((v: any) => 
+                    calculateNormalizedHitRate(
+                      parseInt(v.statistics?.viewCount) || 0,
+                      v.snippet?.publishedAt,
+                      avg
+                    ).isHit
+                  ).length;
+                  return ((hits / (videosData.length || 1)) * 100).toFixed(1) + "%";
                 })()}
               </p>
             </div>

@@ -5,6 +5,7 @@ import { Search, X, Swords, Sparkles } from "lucide-react";
 import { useChannelData } from "@/hooks/useChannelData";
 import { CompareStatsTable } from "./CompareStatsTable";
 import { calculateEstimatedRevenue, calculateEngagementRate } from "@/utils/analyticsCalculations";
+import { calculateNormalizedHitRate } from "@/utils/hitRateNormalization";
 import { isYouTubeShort } from "@/utils/durationParser";
 import dynamic from "next/dynamic";
 
@@ -75,7 +76,7 @@ export function CompareSection({ baseChannel, baseVideos }: CompareSectionProps)
   const baseTotalComments = baseVideos.reduce((sum, v) => sum + (parseInt(v.statistics?.commentCount) || 0), 0);
   const baseTotalViews = baseVideos.reduce((sum, v) => sum + (parseInt(v.statistics?.viewCount) || 0), 0);
   const baseEng = calculateEngagementRate(baseTotalLikes, baseTotalComments, baseTotalViews).rate;
-  const baseHitRate = (baseVideos.filter(v => (parseInt(v.statistics?.viewCount) || 0) > baseAvgViews).length / (baseVideos.length || 1)) * 100;
+  const baseHitRate = (baseVideos.filter(v => calculateNormalizedHitRate(parseInt(v.statistics?.viewCount) || 0, v.snippet?.publishedAt, baseAvgViews).isHit).length / (baseVideos.length || 1)) * 100;
   const baseVelocity = calculateUploadVelocity(baseVideos);
   const baseShortsPct = getShortsPercentage(baseVideos);
   const baseEarnings = calculateEstimatedRevenue(baseAvgViews, baseShortsPct > 50).estimatedTotalRevenue;
@@ -119,7 +120,7 @@ export function CompareSection({ baseChannel, baseVideos }: CompareSectionProps)
   const compTotalComments = compVideos.reduce((sum, v) => sum + (parseInt(v.statistics?.commentCount) || 0), 0);
   const compTotalViews = compVideos.reduce((sum, v) => sum + (parseInt(v.statistics?.viewCount) || 0), 0);
   const compEng = calculateEngagementRate(compTotalLikes, compTotalComments, compTotalViews).rate;
-  const compHitRate = (compVideos.filter(v => (parseInt(v.statistics?.viewCount) || 0) > compAvgViews).length / (compVideos.length || 1)) * 100;
+  const compHitRate = (compVideos.filter(v => calculateNormalizedHitRate(parseInt(v.statistics?.viewCount) || 0, v.snippet?.publishedAt, compAvgViews).isHit).length / (compVideos.length || 1)) * 100;
   const compVelocity = calculateUploadVelocity(compVideos);
   const compShortsPct = getShortsPercentage(compVideos);
   const compEarnings = calculateEstimatedRevenue(compAvgViews, compShortsPct > 50).estimatedTotalRevenue;

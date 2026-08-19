@@ -6,6 +6,7 @@ import { ExternalLink, DollarSign, TrendingUp, ChevronDown } from "lucide-react"
 
 import { calculateEstimatedRevenue, calculateEngagementRate } from "@/utils/analyticsCalculations";
 import { isYouTubeShort, formatDurationDisplay } from "@/utils/durationParser";
+import { calculateNormalizedHitRate } from "@/utils/hitRateNormalization";
 
 interface VideoGridProps {
   videosData: any[];
@@ -146,9 +147,13 @@ export function VideoGrid({ videosData }: VideoGridProps) {
           
           // Engagement and Performance Calculations
           const engMetrics = calculateEngagementRate(likes, comments, views);
-          const isAboveAvg = views > avgViews;
-          const percentAbove = isAboveAvg ? Math.round(((views - avgViews) / avgViews) * 100) : 0;
-          const isTopPerformer = views > (avgViews * 1.5);
+          const { isHit: isAboveAvg, performanceRatio } = calculateNormalizedHitRate(
+            views,
+            video.snippet?.publishedAt,
+            avgViews
+          );
+          const percentAbove = isAboveAvg ? Math.round((performanceRatio - 1) * 100) : 0;
+          const isTopPerformer = performanceRatio >= 1.5;
           
           // Simulated 0-100 Score based on engagement & views relative to channel average
           const score = Math.min(Math.round(50 + (isAboveAvg ? 20 : -10) + (engMetrics.rate * 10)), 99);
