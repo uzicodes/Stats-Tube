@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import "lenis/dist/lenis.css";
+import { SmoothScroll } from "@/components/SmoothScroll";
 
 const rajdhani = localFont({
   src: "../../public/fonts/rajdhani.semibold.woff2",
@@ -42,7 +44,9 @@ export default function RootLayout({
       className={`${rajdhani.variable} ${blackKastile.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <SmoothScroll>{children}</SmoothScroll>
+      </body>
     </html>
   );
 }
