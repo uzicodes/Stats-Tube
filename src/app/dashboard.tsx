@@ -9,6 +9,7 @@ const TrendsCharts = dynamic(
   () => import("@/components/TrendsCharts").then((mod) => mod.TrendsCharts),
   { ssr: false }
 );
+import { ViewMetricNotice } from "@/components/ViewMetricNotice";
 import { calculateEstimatedRevenue, calculateEngagementRate } from "@/utils/analyticsCalculations";
 import { Info } from "lucide-react";
 
@@ -32,6 +33,9 @@ export function Dashboard({ channelData, videosData, onBack }: DashboardProps) {
     <div className="w-full max-w-5xl mx-auto mt-4 space-y-6 text-left">
       <ChannelHeader channel={channelData} onBack={onBack} />
       
+      {/* Impending API v3 Methodology Change Alert */}
+      <ViewMetricNotice />
+
       {/* Overview anchor — placed after the sticky header so it scrolls to the right spot */}
       <div id="overview" className="scroll-mt-24" />
 
@@ -40,8 +44,16 @@ export function Dashboard({ channelData, videosData, onBack }: DashboardProps) {
         {videosData && videosData.length > 0 ? (
           <>
             {/* Usual Views Per Upload */}
-            <div className="p-6 bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-xl">
-              <p className="text-zinc-400 text-sm font-medium mb-2">Usual views per upload</p>
+            <div className="p-6 bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-xl group">
+              <div className="flex items-center gap-1.5 mb-2">
+                <p className="text-zinc-400 text-sm font-medium">Usual views per upload</p>
+                <span 
+                  title="Average views per upload (recorded immediately at playback start per YouTube Data API v3)."
+                  className="cursor-help inline-flex items-center"
+                >
+                  <Info className="w-3.5 h-3.5 text-zinc-500 group-hover:text-zinc-300 transition-colors shrink-0" />
+                </span>
+              </div>
               <p className="text-2xl font-bold text-green-400">
                 {formatNumber(
                   Math.round(
@@ -82,8 +94,16 @@ export function Dashboard({ channelData, videosData, onBack }: DashboardProps) {
             })()}
 
             {/* Top Video Views */}
-            <div className="p-6 bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-xl">
-              <p className="text-zinc-400 text-sm font-medium mb-2">Top Video Views</p>
+            <div className="p-6 bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-xl group">
+              <div className="flex items-center gap-1.5 mb-2">
+                <p className="text-zinc-400 text-sm font-medium">Top Video Views</p>
+                <span 
+                  title="Highest view count recorded for a single upload across the channel."
+                  className="cursor-help inline-flex items-center"
+                >
+                  <Info className="w-3.5 h-3.5 text-zinc-500 group-hover:text-zinc-300 transition-colors shrink-0" />
+                </span>
+              </div>
               <p className="text-2xl font-bold text-green-400">
                 {formatNumber(
                   Math.max(
