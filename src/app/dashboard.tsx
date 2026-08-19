@@ -9,6 +9,7 @@ const TrendsCharts = dynamic(
   () => import("@/components/TrendsCharts").then((mod) => mod.TrendsCharts),
   { ssr: false }
 );
+import { calculateEstimatedRevenue } from "@/utils/analyticsCalculations";
 import { Info } from "lucide-react";
 
 interface DashboardProps {
@@ -86,22 +87,30 @@ export function Dashboard({ channelData, videosData, onBack }: DashboardProps) {
             </div>
 
             {/* Est. Lifetime Earnings */}
-            <div className="p-6 bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-xl">
-              <div className="flex items-center gap-2 mb-2">
-                <p className="text-zinc-400 text-sm font-medium">Est. Lifetime Earnings</p>
-                <div className="group relative">
-                  <Info className="w-4 h-4 text-zinc-500 cursor-help" />
-                  <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-zinc-800 text-zinc-300 text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
-                    Based on total channel views (Blended $2.00 CPM)
+            {(() => {
+              const totalViews = parseInt(channelData.statistics?.viewCount) || 0;
+              const projection = calculateEstimatedRevenue(totalViews);
+              const displayRevenue = projection.estimatedTotalRevenue >= 1000
+                ? `$${formatNumber(projection.estimatedTotalRevenue)}`
+                : projection.formattedRevenue;
+
+              return (
+                <div className="p-6 bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-xl">
+                  <div className="flex items-center gap-2 mb-2">
+                    <p className="text-zinc-400 text-sm font-medium">Est. Lifetime Earnings</p>
+                    <div className="group relative">
+                      <Info className="w-4 h-4 text-zinc-500 cursor-help" />
+                      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2.5 py-1.5 bg-zinc-800 text-zinc-300 text-xs rounded-md shadow-lg max-w-xs text-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+                        {projection.methodologyNote}
+                      </div>
+                    </div>
                   </div>
+                  <p className="text-2xl font-bold text-green-400">
+                    {displayRevenue}
+                  </p>
                 </div>
-              </div>
-              <p className="text-2xl font-bold text-green-400">
-                ${formatNumber(
-                  (parseInt(channelData.statistics?.viewCount) / 1000) * 2.00
-                )}
-              </p>
-            </div>
+              );
+            })()}
 
             {/* Active Audience Rate */}
             <div className="p-6 bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-xl">

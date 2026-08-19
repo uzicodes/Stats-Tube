@@ -4,36 +4,18 @@ import { useState } from "react";
 import Image from "next/image";
 import { ExternalLink, DollarSign, TrendingUp, ChevronDown } from "lucide-react";
 
+import { calculateEstimatedRevenue } from "@/utils/analyticsCalculations";
+import { isYouTubeShort, formatDurationDisplay } from "@/utils/durationParser";
+
 interface VideoGridProps {
   videosData: any[];
 }
-
-// Helper: Convert duration string to seconds
-const durationToSeconds = (duration: string): number => {
-  const match = duration.match(/PT(\d+H)?(\d+M)?(\d+S)?/);
-  if (!match) return 0;
-  const h = match[1] ? parseInt(match[1]) : 0;
-  const m = match[2] ? parseInt(match[2]) : 0;
-  const s = match[3] ? parseInt(match[3]) : 0;
-  return h * 3600 + m * 60 + s;
-};
 
 // Helper: Format large numbers (498000000 -> 498.0M)
 const formatViews = (num: number) => {
   if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
   if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
   return num.toString();
-};
-
-// Helper: Format YouTube Duration (PT22M38S -> 22:38)
-const parseDuration = (duration: string) => {
-  const match = duration.match(/PT(\d+H)?(\d+M)?(\d+S)?/);
-  if (!match) return "0:00";
-  const h = match[1] ? parseInt(match[1]) : 0;
-  const m = match[2] ? parseInt(match[2]) : 0;
-  const s = match[3] ? parseInt(match[3]) : 0;
-  if (h > 0) return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-  return `${m}:${s.toString().padStart(2, '0')}`;
 };
 
 // Helper: Format "Time Ago" (e.g., 2 years ago)
@@ -63,9 +45,9 @@ export function VideoGrid({ videosData }: VideoGridProps) {
 
 
 
-  // Separate shorts and videos (shorts are under 60 seconds)
-  const shorts = videosData.filter(v => durationToSeconds(v.contentDetails?.duration || 'PT0S') < 60).slice(0, 100);
-  const longVideos = videosData.filter(v => durationToSeconds(v.contentDetails?.duration || 'PT0S') >= 60).slice(0, 100);
+  // Separate shorts and long-form videos (Shorts are up to 3 minutes / 180 seconds)
+  const shorts = videosData.filter(v => isYouTubeShort(v.contentDetails?.duration)).slice(0, 100);
+  const longVideos = videosData.filter(v => !isYouTubeShort(v.contentDetails?.duration)).slice(0, 100);
   let filteredVideos = filterType === 'videos' ? longVideos : shorts;
 
   // Apply sorting based on sortBy state
@@ -83,10 +65,13 @@ export function VideoGrid({ videosData }: VideoGridProps) {
         return engagementB - engagementA;
       case 'date':
         return new Date(b.snippet?.publishedAt).getTime() - new Date(a.snippet?.publishedAt).getTime();
-      case 'earnings':
-        const earningsA = (parseInt(a.statistics?.viewCount) || 0) / 1000 * 4;
-        const earningsB = (parseInt(b.statistics?.viewCount) || 0) / 1000 * 4;
+      case 'earnings': {
+        const isShortsA = isYouTubeShort(a.contentDetails?.duration);
+        const isShortsB = isYouTubeShort(b.contentDetails?.duration);
+        const earningsA = calculateEstimatedRevenue(parseInt(a.statistics?.viewCount) || 0, isShortsA).estimatedTotalRevenue;
+        const earningsB = calculateEstimatedRevenue(parseInt(b.statistics?.viewCount) || 0, isShortsB).estimatedTotalRevenue;
         return earningsB - earningsA;
+      }
       default:
         return 0;
     }
@@ -179,7 +164,7 @@ export function VideoGrid({ videosData }: VideoGridProps) {
                 
                 {/* Duration Badge */}
                 <div className="absolute bottom-2 right-2 bg-black/80 text-white text-xs font-medium px-2 py-1 rounded">
-                  {parseDuration(video.contentDetails?.duration)}
+                  {formatDurationDisplay(video.contentDetails?.duration)}
                 </div>
                 
                 {/* Top Performer Badge */}
@@ -232,15 +217,28 @@ export function VideoGrid({ videosData }: VideoGridProps) {
                 </div>
 
                 {/* Earnings Box */}
-                <div className="flex items-center justify-between p-1.5 rounded-lg bg-zinc-900/50 border border-zinc-800/50 mb-2">
-                  <div className="flex items-center text-zinc-400 text-xs">
-                    <DollarSign className="w-2.5 h-2.5 mr-1 opacity-70" />
-                    Est. Earnings
-                  </div>
-                  <div className="font-bold text-emerald-400 text-xs">
-                    ${formatViews((views / 1000) * 4)}
-                  </div>
-                </div>
+                {(() => {
+                  const isShort = isYouTubeShort(video.contentDetails?.duration);
+                  const projection = calculateEstimatedRevenue(views, isShort);
+                  const displayRevenue = projection.estimatedTotalRevenue >= 1000
+                    ? `$${formatViews(projection.estimatedTotalRevenue)}`
+                    : projection.formattedRevenue;
+
+                  return (
+                    <div 
+                      className="flex items-center justify-between p-1.5 rounded-lg bg-zinc-900/50 border border-zinc-800/50 mb-2"
+                      title={projection.methodologyNote}
+                    >
+                      <div className="flex items-center text-zinc-400 text-xs">
+                        <DollarSign className="w-2.5 h-2.5 mr-1 opacity-70" />
+                        Est. Earnings
+                      </div>
+                      <div className="font-bold text-emerald-400 text-xs">
+                        {displayRevenue}
+                      </div>
+                    </div>
+                  );
+                })()}
 
                 {/* Watch Link */}
                 <a 

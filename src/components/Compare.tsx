@@ -4,6 +4,8 @@ import { useState } from "react";
 import { Search, X, Swords, Sparkles } from "lucide-react";
 import { useChannelData } from "@/hooks/useChannelData";
 import { CompareStatsTable } from "./CompareStatsTable";
+import { calculateEstimatedRevenue } from "@/utils/analyticsCalculations";
+import { isYouTubeShort } from "@/utils/durationParser";
 import dynamic from "next/dynamic";
 
 const CompareReachChart = dynamic(
@@ -21,20 +23,10 @@ interface CompareSectionProps {
   baseVideos: any[];
 }
 
-// Helper: Convert duration to seconds to find Shorts
-const durationToSeconds = (duration: string): number => {
-  const match = duration?.match(/PT(\d+H)?(\d+M)?(\d+S)?/);
-  if (!match) return 0;
-  const h = match[1] ? parseInt(match[1]) : 0;
-  const m = match[2] ? parseInt(match[2]) : 0;
-  const s = match[3] ? parseInt(match[3]) : 0;
-  return h * 3600 + m * 60 + s;
-};
-
 // Helper: Calculate Shorts Percentage
 const getShortsPercentage = (videos: any[]) => {
   if (!videos || videos.length === 0) return 0;
-  const shortsCount = videos.filter(v => durationToSeconds(v.contentDetails?.duration || 'PT0S') < 60).length;
+  const shortsCount = videos.filter(v => isYouTubeShort(v.contentDetails?.duration)).length;
   return (shortsCount / videos.length) * 100;
 };
 
@@ -87,8 +79,8 @@ export function CompareSection({ baseChannel, baseVideos }: CompareSectionProps)
   }, 0) / baseVideos.length);
   const baseHitRate = (baseVideos.filter(v => (parseInt(v.statistics?.viewCount) || 0) > baseAvgViews).length / baseVideos.length) * 100;
   const baseVelocity = calculateUploadVelocity(baseVideos);
-  const baseEarnings = (baseAvgViews / 1000) * 4; // $4 RPM
   const baseShortsPct = getShortsPercentage(baseVideos);
+  const baseEarnings = calculateEstimatedRevenue(baseAvgViews, baseShortsPct > 50).estimatedTotalRevenue;
 
   if (!compChannel || !compVideos) {
     return (
@@ -133,8 +125,8 @@ export function CompareSection({ baseChannel, baseVideos }: CompareSectionProps)
   }, 0) / compVideos.length);
   const compHitRate = (compVideos.filter(v => (parseInt(v.statistics?.viewCount) || 0) > compAvgViews).length / compVideos.length) * 100;
   const compVelocity = calculateUploadVelocity(compVideos);
-  const compEarnings = (compAvgViews / 1000) * 4;
   const compShortsPct = getShortsPercentage(compVideos);
+  const compEarnings = calculateEstimatedRevenue(compAvgViews, compShortsPct > 50).estimatedTotalRevenue;
 
   // --- Calculate Dominance & Summary ---
   let baseScore = 0;
