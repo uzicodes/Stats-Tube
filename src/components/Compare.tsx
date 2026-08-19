@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Search, X, Swords, Sparkles } from "lucide-react";
 import { useChannelData } from "@/hooks/useChannelData";
 import { CompareStatsTable } from "./CompareStatsTable";
-import { calculateEstimatedRevenue } from "@/utils/analyticsCalculations";
+import { calculateEstimatedRevenue, calculateEngagementRate } from "@/utils/analyticsCalculations";
 import { isYouTubeShort } from "@/utils/durationParser";
 import dynamic from "next/dynamic";
 
@@ -70,14 +70,12 @@ export function CompareSection({ baseChannel, baseVideos }: CompareSectionProps)
 
 
   // --- Pre-calculate Base Stats ---
-  const baseAvgViews = baseVideos.reduce((sum, v) => sum + (parseInt(v.statistics?.viewCount) || 0), 0) / baseVideos.length;
-  const baseEng = (baseVideos.reduce((sum, v) => {
-    const likes = parseInt(v.statistics?.likeCount) || 0;
-    const comments = parseInt(v.statistics?.commentCount) || 0;
-    const views = parseInt(v.statistics?.viewCount) || 1;
-    return sum + ((likes + comments) / views * 100);
-  }, 0) / baseVideos.length);
-  const baseHitRate = (baseVideos.filter(v => (parseInt(v.statistics?.viewCount) || 0) > baseAvgViews).length / baseVideos.length) * 100;
+  const baseAvgViews = baseVideos.reduce((sum, v) => sum + (parseInt(v.statistics?.viewCount) || 0), 0) / (baseVideos.length || 1);
+  const baseTotalLikes = baseVideos.reduce((sum, v) => sum + (parseInt(v.statistics?.likeCount) || 0), 0);
+  const baseTotalComments = baseVideos.reduce((sum, v) => sum + (parseInt(v.statistics?.commentCount) || 0), 0);
+  const baseTotalViews = baseVideos.reduce((sum, v) => sum + (parseInt(v.statistics?.viewCount) || 0), 0);
+  const baseEng = calculateEngagementRate(baseTotalLikes, baseTotalComments, baseTotalViews).rate;
+  const baseHitRate = (baseVideos.filter(v => (parseInt(v.statistics?.viewCount) || 0) > baseAvgViews).length / (baseVideos.length || 1)) * 100;
   const baseVelocity = calculateUploadVelocity(baseVideos);
   const baseShortsPct = getShortsPercentage(baseVideos);
   const baseEarnings = calculateEstimatedRevenue(baseAvgViews, baseShortsPct > 50).estimatedTotalRevenue;
@@ -116,14 +114,12 @@ export function CompareSection({ baseChannel, baseVideos }: CompareSectionProps)
   }
 
   // --- Pre-calculate Competitor Stats ---
-  const compAvgViews = compVideos.reduce((sum, v) => sum + (parseInt(v.statistics?.viewCount) || 0), 0) / compVideos.length;
-  const compEng = (compVideos.reduce((sum, v) => {
-    const likes = parseInt(v.statistics?.likeCount) || 0;
-    const comments = parseInt(v.statistics?.commentCount) || 0;
-    const views = parseInt(v.statistics?.viewCount) || 1;
-    return sum + ((likes + comments) / views * 100);
-  }, 0) / compVideos.length);
-  const compHitRate = (compVideos.filter(v => (parseInt(v.statistics?.viewCount) || 0) > compAvgViews).length / compVideos.length) * 100;
+  const compAvgViews = compVideos.reduce((sum, v) => sum + (parseInt(v.statistics?.viewCount) || 0), 0) / (compVideos.length || 1);
+  const compTotalLikes = compVideos.reduce((sum, v) => sum + (parseInt(v.statistics?.likeCount) || 0), 0);
+  const compTotalComments = compVideos.reduce((sum, v) => sum + (parseInt(v.statistics?.commentCount) || 0), 0);
+  const compTotalViews = compVideos.reduce((sum, v) => sum + (parseInt(v.statistics?.viewCount) || 0), 0);
+  const compEng = calculateEngagementRate(compTotalLikes, compTotalComments, compTotalViews).rate;
+  const compHitRate = (compVideos.filter(v => (parseInt(v.statistics?.viewCount) || 0) > compAvgViews).length / (compVideos.length || 1)) * 100;
   const compVelocity = calculateUploadVelocity(compVideos);
   const compShortsPct = getShortsPercentage(compVideos);
   const compEarnings = calculateEstimatedRevenue(compAvgViews, compShortsPct > 50).estimatedTotalRevenue;

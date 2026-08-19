@@ -9,7 +9,7 @@ const TrendsCharts = dynamic(
   () => import("@/components/TrendsCharts").then((mod) => mod.TrendsCharts),
   { ssr: false }
 );
-import { calculateEstimatedRevenue } from "@/utils/analyticsCalculations";
+import { calculateEstimatedRevenue, calculateEngagementRate } from "@/utils/analyticsCalculations";
 import { Info } from "lucide-react";
 
 interface DashboardProps {
@@ -52,27 +52,34 @@ export function Dashboard({ channelData, videosData, onBack }: DashboardProps) {
             </div>
 
             {/* Engagement Rate */}
-            <div className="p-6 bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-xl">
-              <div className="flex items-center gap-2 mb-2">
-                <p className="text-zinc-400 text-sm font-medium">Engagement</p>
-                <div className="group relative">
-                  <Info className="w-4 h-4 text-zinc-500 cursor-help" />
-                  <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-zinc-800 text-zinc-300 text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                    Likes & Comments per view
+            {(() => {
+              const totalLikes = videosData.reduce((sum: number, video: any) => sum + (parseInt(video.statistics?.likeCount) || 0), 0);
+              const totalComments = videosData.reduce((sum: number, video: any) => sum + (parseInt(video.statistics?.commentCount) || 0), 0);
+              const totalViews = videosData.reduce((sum: number, video: any) => sum + (parseInt(video.statistics?.viewCount) || 0), 0);
+              const engMetrics = calculateEngagementRate(totalLikes, totalComments, totalViews);
+
+              return (
+                <div className="p-6 bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-xl">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <p className="text-zinc-400 text-sm font-medium">Engagement</p>
+                      <div className="group relative">
+                        <Info className="w-4 h-4 text-zinc-500 cursor-help" />
+                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2.5 py-1.5 bg-zinc-800 text-zinc-300 text-xs rounded shadow-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+                          (Likes + Comments) / Views (Calibrated API v3)
+                        </div>
+                      </div>
+                    </div>
+                    <span className={`px-2 py-0.5 text-[10px] font-semibold uppercase rounded-md border ${engMetrics.badgeColor}`}>
+                      {engMetrics.label.replace(" Engagement", "")}
+                    </span>
                   </div>
+                  <p className="text-2xl font-bold text-green-400">
+                    {engMetrics.formattedRate}
+                  </p>
                 </div>
-              </div>
-              <p className="text-2xl font-bold text-green-400">
-                {(
-                  (videosData.reduce((sum: number, video: any) => {
-                    const likes = parseInt(video.statistics?.likeCount) || 0;
-                    const comments = parseInt(video.statistics?.commentCount) || 0;
-                    const views = parseInt(video.statistics?.viewCount) || 1;
-                    return sum + ((likes + comments) / views * 100);
-                  }, 0) / videosData.length)
-                ).toFixed(2)}%
-              </p>
-            </div>
+              );
+            })()}
 
             {/* Top Video Views */}
             <div className="p-6 bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-xl">

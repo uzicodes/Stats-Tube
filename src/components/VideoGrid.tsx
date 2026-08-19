@@ -4,7 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { ExternalLink, DollarSign, TrendingUp, ChevronDown } from "lucide-react";
 
-import { calculateEstimatedRevenue } from "@/utils/analyticsCalculations";
+import { calculateEstimatedRevenue, calculateEngagementRate } from "@/utils/analyticsCalculations";
 import { isYouTubeShort, formatDurationDisplay } from "@/utils/durationParser";
 
 interface VideoGridProps {
@@ -55,14 +55,19 @@ export function VideoGrid({ videosData }: VideoGridProps) {
     switch (sortBy) {
       case 'views':
         return (parseInt(b.statistics?.viewCount) || 0) - (parseInt(a.statistics?.viewCount) || 0);
-      case 'engagement':
-        const engagementA = (parseInt(a.statistics?.viewCount) || 1) > 0 
-          ? ((parseInt(a.statistics?.likeCount) || 0) + (parseInt(a.statistics?.commentCount) || 0)) / (parseInt(a.statistics?.viewCount) || 1)
-          : 0;
-        const engagementB = (parseInt(b.statistics?.viewCount) || 1) > 0 
-          ? ((parseInt(b.statistics?.likeCount) || 0) + (parseInt(b.statistics?.commentCount) || 0)) / (parseInt(b.statistics?.viewCount) || 1)
-          : 0;
+      case 'engagement': {
+        const engagementA = calculateEngagementRate(
+          parseInt(a.statistics?.likeCount) || 0,
+          parseInt(a.statistics?.commentCount) || 0,
+          parseInt(a.statistics?.viewCount) || 0
+        ).rate;
+        const engagementB = calculateEngagementRate(
+          parseInt(b.statistics?.likeCount) || 0,
+          parseInt(b.statistics?.commentCount) || 0,
+          parseInt(b.statistics?.viewCount) || 0
+        ).rate;
         return engagementB - engagementA;
+      }
       case 'date':
         return new Date(b.snippet?.publishedAt).getTime() - new Date(a.snippet?.publishedAt).getTime();
       case 'earnings': {
@@ -139,14 +144,14 @@ export function VideoGrid({ videosData }: VideoGridProps) {
           const likes = parseInt(video.statistics?.likeCount) || 0;
           const comments = parseInt(video.statistics?.commentCount) || 0;
           
-          // Math for badges
-          const engagement = views > 0 ? ((likes + comments) / views) * 100 : 0;
+          // Engagement and Performance Calculations
+          const engMetrics = calculateEngagementRate(likes, comments, views);
           const isAboveAvg = views > avgViews;
           const percentAbove = isAboveAvg ? Math.round(((views - avgViews) / avgViews) * 100) : 0;
           const isTopPerformer = views > (avgViews * 1.5);
           
           // Simulated 0-100 Score based on engagement & views relative to channel average
-          const score = Math.min(Math.round(50 + (isAboveAvg ? 20 : -10) + (engagement * 10)), 99);
+          const score = Math.min(Math.round(50 + (isAboveAvg ? 20 : -10) + (engMetrics.rate * 10)), 99);
 
           return (
             <div key={video.id} className="flex flex-col bg-zinc-950/40 border border-zinc-800/80 rounded-2xl overflow-hidden hover:border-red-500/50 transition-colors group">
@@ -185,8 +190,11 @@ export function VideoGrid({ videosData }: VideoGridProps) {
 
                 {/* Badges Row */}
                 <div className="flex flex-wrap gap-1 mb-2">
-                  <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-medium bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
-                    {engagement.toFixed(2)}% engagement
+                  <span 
+                    className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-medium border ${engMetrics.badgeColor}`}
+                    title={engMetrics.label}
+                  >
+                    {engMetrics.formattedRate} {engMetrics.label.replace(" Engagement", "")}
                   </span>
                   <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-medium bg-zinc-500/10 text-zinc-400 border border-zinc-500/20">
                     Score {score}

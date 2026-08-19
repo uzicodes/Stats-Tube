@@ -1,6 +1,6 @@
 /**
  * @file analyticsCalculations.ts
- * @description Calibrated YouTube revenue & earnings estimation utilities
+ * @description Calibrated YouTube revenue & engagement estimation utilities
  * for the unified YouTube Data API v3 view counting methodology.
  */
 
@@ -29,6 +29,27 @@ export interface RevenueProjection {
   methodologyNote: string;
   /** Formatted USD string representation (e.g., "$1,234.56") */
   formattedRevenue: string;
+}
+
+/**
+ * Engagement rate performance tiers calibrated for gross video start view counting.
+ */
+export type EngagementTier = "viral" | "high" | "healthy" | "low";
+
+/**
+ * Result structure returned by engagement calculation utilities.
+ */
+export interface EngagementMetrics {
+  /** Calculated engagement rate percentage as a number rounded to 2 decimal places (e.g., 3.42) */
+  rate: number;
+  /** Formatted rate string with percentage symbol (e.g., "3.42%") */
+  formattedRate: string;
+  /** Categorized performance tier */
+  tier: EngagementTier;
+  /** Human-readable tier label */
+  label: string;
+  /** Tailwind CSS styling classes for background, text, and border */
+  badgeColor: string;
 }
 
 /**
@@ -124,5 +145,78 @@ export function calculateEstimatedRevenue(
     effectiveRpm,
     methodologyNote,
     formattedRevenue,
+  };
+}
+
+/**
+ * Calculates audience engagement rate ((likes + comments) / views * 100)
+ * calibrated for gross video start counting in YouTube Data API v3.
+ *
+ * Tiers:
+ * - >= 5.0%: "Viral Engagement" (Emerald styling)
+ * - >= 2.5%: "High Engagement" (Blue styling)
+ * - >= 1.0%: "Healthy Engagement" (Amber styling)
+ * - < 1.0%: "Low Engagement" (Rose styling)
+ *
+ * @param likes - Total like count recorded for the video/channel.
+ * @param comments - Total comment count recorded for the video/channel.
+ * @param views - Total gross views recorded by YouTube Data API v3.
+ * @returns {EngagementMetrics} Calibrated engagement rate, tier, label, and Tailwind badge styling.
+ *
+ * @example
+ * calculateEngagementRate(12000, 800, 250000);
+ * // => { rate: 5.12, formattedRate: "5.12%", tier: "viral", label: "Viral Engagement", badgeColor: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" }
+ */
+export function calculateEngagementRate(
+  likes: number,
+  comments: number,
+  views: number
+): EngagementMetrics {
+  const safeLikes = sanitizeNonNegative(likes);
+  const safeComments = sanitizeNonNegative(comments);
+  const safeViews = sanitizeNonNegative(views);
+
+  if (safeViews === 0) {
+    return {
+      rate: 0,
+      formattedRate: "0.00%",
+      tier: "low",
+      label: "Low Engagement",
+      badgeColor: "bg-rose-500/10 text-rose-400 border-rose-500/20",
+    };
+  }
+
+  const rawRate = ((safeLikes + safeComments) / safeViews) * 100;
+  const rate = Math.round((rawRate + Number.EPSILON) * 100) / 100;
+  const formattedRate = `${rate.toFixed(2)}%`;
+
+  let tier: EngagementTier;
+  let label: string;
+  let badgeColor: string;
+
+  if (rate >= 5.0) {
+    tier = "viral";
+    label = "Viral Engagement";
+    badgeColor = "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
+  } else if (rate >= 2.5) {
+    tier = "high";
+    label = "High Engagement";
+    badgeColor = "bg-blue-500/10 text-blue-400 border-blue-500/20";
+  } else if (rate >= 1.0) {
+    tier = "healthy";
+    label = "Healthy Engagement";
+    badgeColor = "bg-amber-500/10 text-amber-400 border-amber-500/20";
+  } else {
+    tier = "low";
+    label = "Low Engagement";
+    badgeColor = "bg-rose-500/10 text-rose-400 border-rose-500/20";
+  }
+
+  return {
+    rate,
+    formattedRate,
+    tier,
+    label,
+    badgeColor,
   };
 }
